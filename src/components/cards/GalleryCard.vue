@@ -1,5 +1,5 @@
 <script setup>
-import { fmtDate } from "../../store/useUsStore";
+import { fmtDate } from "../../utils/dates";
 import GlassCard from "../ui/GlassCard.vue";
 import PhotoPlaceholder from "../ui/PhotoPlaceholder.vue";
 import UsIcon from "../ui/UsIcon.vue";

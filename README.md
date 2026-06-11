@@ -1,6 +1,6 @@
 # Us ❤
 
-A private couples app — a love-themed personal space for two people only, built with Vue 3, Vite, Tailwind CSS, and lucide-vue-next in an Apple-style liquid-glass design.
+A private couples app — a love-themed personal space for two people only, built with Vue 3, Vite, Pinia, Tailwind CSS, and lucide-vue-next in an Apple-style liquid-glass design, synced to Cloud Firestore.
 
 ## Getting started
 
@@ -10,6 +10,35 @@ npm run dev      # start the dev server
 npm run build    # production build
 npm run preview  # preview the production build
 ```
+
+## Firestore sync
+
+State lives in a Pinia store (`src/stores/us.js`). When Firebase is configured, every tab's data is stored in its own Firestore collection, all prefixed with **`sph`**:
+
+| Tab / data | Collection |
+| ---------- | ---------- |
+| Timeline | `sph_milestones` |
+| Memories | `sph_memories` |
+| Gallery | `sph_gallery` |
+| Places to Visit | `sph_wishlist` |
+| Places We Visited | `sph_visited` |
+| Goals | `sph_goals` |
+| Tasks | `sph_tasks` |
+| Reminders | `sph_reminders` |
+| Notes | `sph_notes` |
+| What You Did For Me | `sph_gratitudeForMe` |
+| What I Did For You | `sph_gratitudeForYou` |
+| Chat | `sph_messages` |
+| Per-user themes | `sph_settings` |
+| One-time seed marker | `sph_meta` |
+
+To enable it:
+
+1. Create a Firebase project, add a **Web app**, and enable **Cloud Firestore**.
+2. Copy `.env.example` to `.env.local` and fill in the config values from your Firebase project settings.
+3. Restart the dev server. On first run the demo data is seeded once; after that everything you add, edit, or delete on any tab is written to Firestore and streamed back live.
+
+The experience stays smooth either way: writes update the UI instantly (Firestore latency compensation), an offline-first persistent cache makes reloads render immediately and survives losing the connection, and changes sync in real time across both partners' devices. If the env vars are not set, the app falls back to `localStorage` exactly as before — no Firebase required to develop or demo. Note: gallery photos are stored as data URLs inside documents, so very large images can approach Firestore's 1 MB document limit (uploads are resized client-side to stay under it).
 
 ## Unlocking
 

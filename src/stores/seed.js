@@ -1,12 +1,9 @@
-/* Us — reactive store (composable, persisted to localStorage) */
-import { reactive, watch, watchEffect } from "vue";
+/* demo seed data — loaded on first run (localStorage) or written once to Firestore */
+export const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
 
-const KEY = "us-app-v1";
-const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+export const SEED_THEMES = { Hithesh: "rose", Spoorthy: "lavender" };
 
-const seed = {
-  theme: "rose",
-  themes: { Hithesh: "rose", Spoorthy: "lavender" },
+export const LIST_SEEDS = {
   milestones: [
     { id: uid(), date: "2022-03-14", title: "The day we met", note: "Rainy afternoon, the little coffee shop on 5th. You ordered my order before I did.", photo: true },
     { id: uid(), date: "2022-04-02", title: "First date", note: "Pasta, terrible jokes, and neither of us wanted to go home.", photo: false },
@@ -21,6 +18,12 @@ const seed = {
     { id: uid(), caption: "Your birthday surprise (you cried)", date: "2025-03-09", favorite: false, h: 170 },
     { id: uid(), caption: "Snow day — first one in our place", date: "2025-12-18", favorite: false, h: 210 },
     { id: uid(), caption: "Matching sweaters. No regrets.", date: "2025-12-25", favorite: true, h: 150 },
+  ],
+  gallery: [
+    { id: uid(), src: null, caption: "First picnic in the park", date: "2024-05-04" },
+    { id: uid(), src: null, caption: "New Year’s kiss", date: "2026-01-01" },
+    { id: uid(), src: null, caption: "Road trip face", date: "2025-07-19" },
+    { id: uid(), src: null, caption: "Sunday morning, no plans", date: "2026-04-12" },
   ],
   wishlist: [
     { id: uid(), name: "Kyoto in cherry blossom season", note: "Stay in a ryokan, slow mornings, tea.", priority: "Dream" },
@@ -44,27 +47,6 @@ const seed = {
     { id: uid(), title: "Plan the weekend hike", assignee: "Spoorthy", due: "2026-06-12", done: true },
     { id: uid(), title: "Buy a second reading lamp", assignee: "Hithesh", due: "", done: false },
   ],
-  gratitudeForMe: [
-    { id: uid(), date: "2026-06-08", note: "You brought me soup and stayed on the phone while I fell asleep." },
-    { id: uid(), date: "2026-05-30", note: "You remembered the small thing I said three weeks ago. You always do." },
-    { id: uid(), date: "2026-05-17", note: "Flowers. No reason. Just because it was Tuesday." },
-  ],
-  gratitudeForYou: [
-    { id: uid(), date: "2026-06-05", note: "Made your coffee before your alarm went off." },
-    { id: uid(), date: "2026-05-22", note: "Drove an hour to bring you the charger you forgot." },
-  ],
-  gallery: [
-    { id: uid(), src: null, caption: "First picnic in the park", date: "2024-05-04" },
-    { id: uid(), src: null, caption: "New Year’s kiss", date: "2026-01-01" },
-    { id: uid(), src: null, caption: "Road trip face", date: "2025-07-19" },
-    { id: uid(), src: null, caption: "Sunday morning, no plans", date: "2026-04-12" },
-  ],
-  messages: [
-    { id: uid(), from: "Spoorthy", text: "Movie night Friday? I’m picking this time 🍿", ts: "2026-06-09T19:42:00" },
-    { id: uid(), from: "Hithesh", text: "Only if I get veto power", ts: "2026-06-09T19:44:00" },
-    { id: uid(), from: "Spoorthy", text: "No veto. You used it on my documentary", ts: "2026-06-09T19:45:00" },
-    { id: uid(), from: "Hithesh", text: "It was three hours about fonts ❤", ts: "2026-06-09T19:47:00" },
-  ],
   reminders: [
     { id: uid(), title: "Monthsary date night", startDate: "2026-06-02", intervalDays: 30 },
     { id: uid(), title: "Bring flowers home", startDate: "2026-05-28", intervalDays: 25 },
@@ -76,80 +58,19 @@ const seed = {
     { id: uid(), title: "Gift ideas", body: "that ceramic mug she pointed at twice\nfilm camera\npicnic blanket (red check)", date: "2026-05-30" },
     { id: uid(), title: "Our pizza dough", body: "500g flour, 325ml water, 10g salt, 3g yeast.\ncold rise 48h — do NOT rush it again.", date: "2026-02-21" },
   ],
+  gratitudeForMe: [
+    { id: uid(), date: "2026-06-08", note: "You brought me soup and stayed on the phone while I fell asleep." },
+    { id: uid(), date: "2026-05-30", note: "You remembered the small thing I said three weeks ago. You always do." },
+    { id: uid(), date: "2026-05-17", note: "Flowers. No reason. Just because it was Tuesday." },
+  ],
+  gratitudeForYou: [
+    { id: uid(), date: "2026-06-05", note: "Made your coffee before your alarm went off." },
+    { id: uid(), date: "2026-05-22", note: "Drove an hour to bring you the charger you forgot." },
+  ],
+  messages: [
+    { id: uid(), from: "Spoorthy", text: "Movie night Friday? I’m picking this time 🍿", ts: "2026-06-09T19:42:00" },
+    { id: uid(), from: "Hithesh", text: "Only if I get veto power", ts: "2026-06-09T19:44:00" },
+    { id: uid(), from: "Spoorthy", text: "No veto. You used it on my documentary", ts: "2026-06-09T19:45:00" },
+    { id: uid(), from: "Hithesh", text: "It was three hours about fonts ❤", ts: "2026-06-09T19:47:00" },
+  ],
 };
-
-let saved = null;
-try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { saved = null; }
-
-export const state = reactive(Object.assign(JSON.parse(JSON.stringify(seed)), saved || {}));
-
-// migrate old Me/You data to the two named users
-const NAME_MAP = { Me: "Hithesh", You: "Spoorthy" };
-state.tasks.forEach((t) => { if (NAME_MAP[t.assignee]) t.assignee = NAME_MAP[t.assignee]; });
-state.messages.forEach((m) => { if (NAME_MAP[m.from]) m.from = NAME_MAP[m.from]; });
-
-// migrate single shared theme -> per-user themes
-if (saved && saved.theme && !saved.themes) {
-  state.themes = { Hithesh: saved.theme, Spoorthy: saved.theme };
-}
-
-watch(
-  state,
-  () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} },
-  { deep: true }
-);
-
-// theme -> <html data-theme>
-watchEffect(() => {
-  document.documentElement.dataset.theme = state.theme;
-});
-
-const actions = {
-  addItem(list, item) {
-    state[list].unshift(Object.assign({ id: uid() }, item));
-  },
-  addMessage(from, text) {
-    state.messages.push({ id: uid(), from, text, ts: new Date().toISOString() });
-  },
-  removeItem(list, id) {
-    const i = state[list].findIndex((x) => x.id === id);
-    if (i > -1) state[list].splice(i, 1);
-  },
-  toggleFavorite(id) {
-    const m = state.memories.find((x) => x.id === id);
-    if (m) m.favorite = !m.favorite;
-  },
-  toggleTask(id) {
-    const t = state.tasks.find((x) => x.id === id);
-    if (t) t.done = !t.done;
-    return t ? t.done : false;
-  },
-  bumpGoal(id, delta) {
-    const g = state.goals.find((x) => x.id === id);
-    if (!g) return 0;
-    g.progress = Math.max(0, Math.min(100, g.progress + delta));
-    return g.progress;
-  },
-  markVisited(id) {
-    const i = state.wishlist.findIndex((x) => x.id === id);
-    if (i === -1) return;
-    const p = state.wishlist[i];
-    state.wishlist.splice(i, 1);
-    state.visited.unshift({
-      id: p.id,
-      name: p.name,
-      date: new Date().toISOString().slice(0, 10),
-      rating: 5,
-      story: p.note || "",
-    });
-  },
-};
-
-export function fmtDate(d) {
-  if (!d) return "";
-  const dt = new Date(d + "T12:00:00");
-  if (isNaN(dt)) return d;
-  return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
-export const useUsStore = () => Object.assign({ state }, actions);

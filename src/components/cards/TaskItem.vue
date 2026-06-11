@@ -1,6 +1,6 @@
 <script setup>
 import { burstHearts } from "../../composables/burstHearts";
-import { fmtDate } from "../../store/useUsStore";
+import { fmtDate } from "../../utils/dates";
 import GlassCard from "../ui/GlassCard.vue";
 import UsIcon from "../ui/UsIcon.vue";
 

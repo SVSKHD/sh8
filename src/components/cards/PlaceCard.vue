@@ -1,7 +1,7 @@
 <script setup>
 import { burstHearts } from "../../composables/burstHearts";
 import { showDetail } from "../../composables/detail";
-import { fmtDate } from "../../store/useUsStore";
+import { fmtDate } from "../../utils/dates";
 import GlassCard from "../ui/GlassCard.vue";
 import HeartRating from "../ui/HeartRating.vue";
 import UsIcon from "../ui/UsIcon.vue";

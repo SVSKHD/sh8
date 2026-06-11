@@ -1,4 +1,7 @@
 node_modules
 dist
+dist-emu
 *.local
 .DS_Store
+firestore-debug.log
+.firebase

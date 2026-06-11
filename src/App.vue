@@ -23,11 +23,12 @@ import HeartRating from "./components/ui/HeartRating.vue";
 import ThemeSwitcher from "./components/ui/ThemeSwitcher.vue";
 import UsIcon from "./components/ui/UsIcon.vue";
 import { detailState } from "./composables/detail";
-import { useUsStore } from "./store/useUsStore";
+import { useUsStore } from "./stores/us";
 import { userByName } from "./users";
 
 const store = useUsStore();
-const state = store.state;
+store.init();
+const state = store;
 const today = () => new Date().toISOString().slice(0, 10);
 
 const TABS = [
@@ -203,14 +204,17 @@ const onUnlock = (u) => {
 /* per-user theme: switching saves to the logged-in user's slot */
 const themeModel = computed({
   get: () => state.theme,
-  set: (v) => {
-    state.theme = v;
-    if (user.value) {
-      if (!state.themes) state.themes = {};
-      state.themes[user.value.name] = v;
-    }
-  },
+  set: (v) => store.setTheme(v, user.value && user.value.name),
 });
+
+/* apply the logged-in user's saved theme whenever it loads or changes
+   (e.g. arriving from Firestore, or switched on another device) */
+watch(
+  () => (user.value && state.themes ? state.themes[user.value.name] : null),
+  (t) => {
+    if (t) state.theme = t;
+  }
+);
 
 /* gallery carousel */
 const photos = computed(() => state.gallery.filter((g) => g.src));

@@ -1,12 +1,14 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { detailState as d, relDate } from "../../composables/detail";
-import { fmtDate as fmt, state } from "../../store/useUsStore";
+import { useUsStore } from "../../stores/us";
+import { fmtDate as fmt } from "../../utils/dates";
 import GlassModal from "../ui/GlassModal.vue";
 import HeartRating from "../ui/HeartRating.vue";
 import PhotoPlaceholder from "../ui/PhotoPlaceholder.vue";
 import UsIcon from "../ui/UsIcon.vue";
 
+const state = useUsStore();
 const dir = ref(1);
 const touchX = ref(null);
 

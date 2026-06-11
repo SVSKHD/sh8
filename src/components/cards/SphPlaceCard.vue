@@ -2,9 +2,9 @@
 import { burstHearts } from "../../composables/burstHearts";
 import { showDetail } from "../../composables/detail";
 import { fmtDate } from "../../utils/dates";
-import GlassCard from "../ui/GlassCard.vue";
-import HeartRating from "../ui/HeartRating.vue";
-import UsIcon from "../ui/UsIcon.vue";
+import SphGlassCard from "../ui/SphGlassCard.vue";
+import SphHeartRating from "../ui/SphHeartRating.vue";
+import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -20,7 +20,7 @@ const markVisited = (ev) => {
 </script>
 
 <template>
-  <glass-card
+  <sph-glass-card
     hover
     radius="1.4rem"
     pad="1.15rem 1.25rem"
@@ -42,7 +42,7 @@ const markVisited = (ev) => {
         </p>
       </div>
       <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete place" @click.stop="$emit('remove')">
-        <us-icon name="Trash2" :size="15" />
+        <sph-icon name="Trash2" :size="15" />
       </button>
     </div>
     <p v-if="mode === 'wishlist' && item.note" class="m-0 mt-1.5 text-sm leading-relaxed clamp-2" style="color: var(--ink-2)">
@@ -51,11 +51,11 @@ const markVisited = (ev) => {
     <p v-if="mode === 'visited' && item.story" class="m-0 mt-1.5 text-sm leading-relaxed clamp-2" style="color: var(--ink-2)">
       {{ item.story }}
     </p>
-    <div v-if="mode === 'visited'" class="card-foot"><heart-rating :model-value="item.rating" readonly /></div>
+    <div v-if="mode === 'visited'" class="card-foot"><sph-heart-rating :model-value="item.rating" readonly /></div>
     <div v-if="mode === 'wishlist'" class="card-foot">
       <button class="gbtn" style="font-size: 0.82rem; padding: 0.4rem 0.9rem" @click.stop="markVisited($event)">
-        <us-icon name="Check" :size="15" /> Mark as visited
+        <sph-icon name="Check" :size="15" /> Mark as visited
       </button>
     </div>
-  </glass-card>
+  </sph-glass-card>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
-import PhotoPlaceholder from "./PhotoPlaceholder.vue";
-import UsIcon from "./UsIcon.vue";
+import SphPhotoPlaceholder from "./SphPhotoPlaceholder.vue";
+import SphIcon from "./SphIcon.vue";
 
 defineProps({
   modelValue: { type: String, default: null },
@@ -35,7 +35,7 @@ const onFile = (ev) => {
     <span class="glabel">{{ label }}</span>
     <div class="flex items-center gap-3">
       <label class="gbtn" style="font-size: 0.85rem">
-        <us-icon name="Image" :size="16" /> {{ modelValue ? "Change photo" : "Choose photo" }}
+        <sph-icon name="Image" :size="16" /> {{ modelValue ? "Change photo" : "Choose photo" }}
         <input
           type="file"
           accept="image/*"
@@ -44,7 +44,13 @@ const onFile = (ev) => {
           @change="onFile($event)"
         />
       </label>
-      <button v-if="modelValue" type="button" class="gbtn gbtn-ghost" style="font-size: 0.8rem" @click="$emit('update:modelValue', null)">
+      <button
+        v-if="modelValue"
+        type="button"
+        class="gbtn gbtn-ghost"
+        style="font-size: 0.8rem"
+        @click="$emit('update:modelValue', null)"
+      >
         Remove
       </button>
     </div>
@@ -55,6 +61,6 @@ const onFile = (ev) => {
       class="mt-2.5 block w-full"
       style="border-radius: 0.9rem; max-height: 11rem; object-fit: cover"
     />
-    <photo-placeholder v-else label="your photo goes here" :height="90" class="mt-2.5" />
+    <sph-photo-placeholder v-else label="your photo goes here" :height="90" class="mt-2.5" />
   </div>
 </template>

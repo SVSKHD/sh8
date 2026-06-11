@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import GlassCard from "./ui/GlassCard.vue";
-import UsIcon from "./ui/UsIcon.vue";
+import SphGlassCard from "./ui/SphGlassCard.vue";
+import SphIcon from "./ui/SphIcon.vue";
 
 defineProps({ user: { type: Object, required: true } });
 
@@ -10,10 +10,28 @@ const WX_TABLE = [
   { c: [2], icon: "CloudSun", nightIcon: "CloudMoon", label: "partly cloudy", quote: "a little cloud, a lot of warmth" },
   { c: [3], icon: "Cloud", nightIcon: "Cloud", label: "overcast", quote: "grey outside, golden in here" },
   { c: [45, 48], icon: "CloudFog", nightIcon: "CloudFog", label: "foggy", quote: "foggy out — hold my hand" },
-  { c: [51, 53, 55, 56, 57], icon: "CloudDrizzle", nightIcon: "CloudDrizzle", label: "drizzling", quote: "tiny rain, big cuddle energy" },
-  { c: [61, 63, 65, 66, 67, 80, 81, 82], icon: "CloudRain", nightIcon: "CloudRain", label: "raining", quote: "perfect weather to stay in together" },
+  {
+    c: [51, 53, 55, 56, 57],
+    icon: "CloudDrizzle",
+    nightIcon: "CloudDrizzle",
+    label: "drizzling",
+    quote: "tiny rain, big cuddle energy",
+  },
+  {
+    c: [61, 63, 65, 66, 67, 80, 81, 82],
+    icon: "CloudRain",
+    nightIcon: "CloudRain",
+    label: "raining",
+    quote: "perfect weather to stay in together",
+  },
   { c: [71, 73, 75, 77, 85, 86], icon: "CloudSnow", nightIcon: "CloudSnow", label: "snowing", quote: "cold hands, warm hearts" },
-  { c: [95, 96, 99], icon: "CloudLightning", nightIcon: "CloudLightning", label: "stormy", quote: "wild out there, safe in here" },
+  {
+    c: [95, 96, 99],
+    icon: "CloudLightning",
+    nightIcon: "CloudLightning",
+    label: "stormy",
+    quote: "wild out there, safe in here",
+  },
 ];
 const wxMeta = (code, isDay) => {
   const row = WX_TABLE.find((r) => r.c.indexOf(code) > -1) || WX_TABLE[0];
@@ -37,7 +55,11 @@ async function fetchWeather() {
     city = "";
   const pos = await new Promise((res) => {
     if (!navigator.geolocation) return res(null);
-    navigator.geolocation.getCurrentPosition((p) => res(p), () => res(null), { timeout: 6000, maximumAge: 600000 });
+    navigator.geolocation.getCurrentPosition(
+      (p) => res(p),
+      () => res(null),
+      { timeout: 6000, maximumAge: 600000 },
+    );
   });
   if (pos) {
     lat = pos.coords.latitude;
@@ -45,7 +67,11 @@ async function fetchWeather() {
     try {
       const g = await (
         await fetch(
-          "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat + "&longitude=" + lon + "&localityLanguage=en"
+          "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" +
+            lat +
+            "&longitude=" +
+            lon +
+            "&localityLanguage=en",
         )
       ).json();
       city = g.city || g.locality || "";
@@ -90,7 +116,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <glass-card radius="1.5rem" pad="1.1rem 1.4rem" class="mb-5">
+  <sph-glass-card radius="1.5rem" pad="1.1rem 1.4rem" class="mb-5">
     <div class="flex items-center justify-between gap-4 flex-wrap">
       <div class="min-w-0">
         <h2 class="font-display m-0 text-2xl font-semibold italic leading-tight">
@@ -102,12 +128,12 @@ onMounted(() => {
         </p>
       </div>
       <div v-if="wx" class="flex items-center gap-3" style="flex: 0 0 auto">
-        <span style="color: var(--accent)"><us-icon :name="meta.icon" :size="30" :stroke-width="1.7" /></span>
+        <span style="color: var(--accent)"><sph-icon :name="meta.icon" :size="30" :stroke-width="1.7" /></span>
         <div>
           <p class="greet-temp">{{ wx.temp }}°</p>
           <p class="greet-cond">{{ meta.label }}{{ wx.city ? " in " + wx.city : "" }}</p>
         </div>
       </div>
     </div>
-  </glass-card>
+  </sph-glass-card>
 </template>

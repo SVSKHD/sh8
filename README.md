@@ -9,28 +9,41 @@ npm install
 npm run dev      # start the dev server
 npm run build    # production build
 npm run preview  # preview the production build
+npm test         # vitest in watch mode
+npm run test:run # run the test suite once
+npm run format   # prettier --write across the repo
 ```
+
+## Component library — `/ui`
+
+Every building block is a reusable, prop-driven component named with the **`Sph`** prefix (`SphGlassCard`, `SphGlassModal`, `SphGlassTabBar`, `SphHeartRating`, `SphTaskItem`, `SphReminderCard`, `SphChatBox`, `SphLockScreen`, …). Visit **`/ui`** for a live component gallery: foundations (buttons, chips, inputs, tab bar), every content card with sample data, the chat box, modal, greeting card, and a live lock-screen preview — all reskinnable from the theme switcher in the gallery header.
+
+## Quality tooling
+
+- **Tests** — Vitest + Vue Test Utils (jsdom) in `tests/`: store actions and persistence, `sph` collection naming, date/relative-time utilities, and component behavior (lock-screen codes, chat alignment, reminder math, modal, tab bar, hearts, task chips). Run with `npm run test:run`.
+- **Prettier** — repo-wide formatting (`.prettierrc.json`), checked with `npm run format:check`.
+- **Husky + lint-staged** — installed via the `prepare` script: the pre-commit hook formats staged files with Prettier, and the pre-push hook runs the full test suite.
 
 ## Firestore sync
 
 State lives in a Pinia store (`src/stores/us.js`). When Firebase is configured, every tab's data is stored in its own Firestore collection, all prefixed with **`sph`**:
 
-| Tab / data | Collection |
-| ---------- | ---------- |
-| Timeline | `sph_milestones` |
-| Memories | `sph_memories` |
-| Gallery | `sph_gallery` |
-| Places to Visit | `sph_wishlist` |
-| Places We Visited | `sph_visited` |
-| Goals | `sph_goals` |
-| Tasks | `sph_tasks` |
-| Reminders | `sph_reminders` |
-| Notes | `sph_notes` |
-| What You Did For Me | `sph_gratitudeForMe` |
-| What I Did For You | `sph_gratitudeForYou` |
-| Chat | `sph_messages` |
-| Per-user themes | `sph_settings` |
-| One-time seed marker | `sph_meta` |
+| Tab / data           | Collection            |
+| -------------------- | --------------------- |
+| Timeline             | `sph_milestones`      |
+| Memories             | `sph_memories`        |
+| Gallery              | `sph_gallery`         |
+| Places to Visit      | `sph_wishlist`        |
+| Places We Visited    | `sph_visited`         |
+| Goals                | `sph_goals`           |
+| Tasks                | `sph_tasks`           |
+| Reminders            | `sph_reminders`       |
+| Notes                | `sph_notes`           |
+| What You Did For Me  | `sph_gratitudeForMe`  |
+| What I Did For You   | `sph_gratitudeForYou` |
+| Chat                 | `sph_messages`        |
+| Per-user themes      | `sph_settings`        |
+| One-time seed marker | `sph_meta`            |
 
 To enable it:
 
@@ -44,10 +57,10 @@ The experience stays smooth either way: writes update the UI instantly (Firestor
 
 The app is locked behind a glass PIN pad — each person has their own code:
 
-| Code | Person | View |
-| ---- | ------ | ---- |
-| `2607` | Hithesh (*cuore mio*) | his personalized view |
-| `1710` | Spoorthy (*cuore mia*) | her personalized view |
+| Code   | Person                 | View                  |
+| ------ | ---------------------- | --------------------- |
+| `2607` | Hithesh (_cuore mio_)  | his personalized view |
+| `1710` | Spoorthy (_cuore mia_) | her personalized view |
 
 You can type the code on the keyboard (Backspace deletes). Wrong codes shake the card. The session stays unlocked until you press the lock icon in the header.
 

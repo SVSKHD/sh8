@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
-import EmptyState from "../ui/EmptyState.vue";
-import UsIcon from "../ui/UsIcon.vue";
+import SphEmptyState from "../ui/SphEmptyState.vue";
+import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({
   items: { type: Array, required: true },
@@ -45,7 +45,7 @@ const send = () => {
           <p class="bubble-meta m-0" :style="m.from === me ? 'text-align: right;' : ''">{{ m.from }} · {{ fmtTs(m.ts) }}</p>
         </div>
       </div>
-      <empty-state v-if="!items.length" emoji="💬" message="No messages yet." hint="Say something sweet below." />
+      <sph-empty-state v-if="!items.length" emoji="💬" message="No messages yet." hint="Say something sweet below." />
     </div>
     <form class="flex items-center gap-2 mt-3" @submit.prevent="send()">
       <input
@@ -56,7 +56,7 @@ const send = () => {
         aria-label="Message"
       />
       <button type="submit" class="gbtn gbtn-primary gbtn-icon" aria-label="Send message" style="padding: 0.65rem">
-        <us-icon name="Send" :size="17" />
+        <sph-icon name="Send" :size="17" />
       </button>
     </form>
   </div>

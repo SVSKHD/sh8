@@ -18,9 +18,12 @@ export function burstHearts(x, y, n = 14) {
     s.animate(
       [
         { transform: "translate(-50%, -50%) scale(0.4) rotate(0deg)", opacity: 1 },
-        { transform: "translate(calc(-50% + " + dx + "px), calc(-50% + " + dy + "px)) scale(1.1) rotate(" + rot + "deg)", opacity: 0 },
+        {
+          transform: "translate(calc(-50% + " + dx + "px), calc(-50% + " + dy + "px)) scale(1.1) rotate(" + rot + "deg)",
+          opacity: 0,
+        },
       ],
-      { duration: 700 + Math.random() * 500, easing: "cubic-bezier(0.16, 0.84, 0.44, 1)" }
+      { duration: 700 + Math.random() * 500, easing: "cubic-bezier(0.16, 0.84, 0.44, 1)" },
     ).onfinish = () => s.remove();
   }
 }

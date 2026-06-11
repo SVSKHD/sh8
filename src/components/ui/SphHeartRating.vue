@@ -1,5 +1,5 @@
 <script setup>
-import UsIcon from "./UsIcon.vue";
+import SphIcon from "./SphIcon.vue";
 
 defineProps({
   modelValue: { type: Number, default: 0 },
@@ -20,7 +20,7 @@ defineEmits(["update:modelValue"]);
       :style="readonly ? 'cursor:default' : ''"
       @click="!readonly && $emit('update:modelValue', n)"
     >
-      <us-icon name="Heart" :size="size" :stroke-width="1.8" />
+      <sph-icon name="Heart" :size="size" :stroke-width="1.8" />
     </button>
   </span>
 </template>

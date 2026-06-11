@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import UsIcon from "./UsIcon.vue";
+import SphIcon from "./SphIcon.vue";
 
 defineProps({ modelValue: { type: String, default: "rose" } });
 const emit = defineEmits(["update:modelValue"]);
@@ -44,7 +44,7 @@ onBeforeUnmount(() => {
 <template>
   <div ref="root" class="theme-wrap">
     <button class="gbtn gbtn-icon" :aria-expanded="open" aria-label="Choose theme" title="Theme" @click="open = !open">
-      <us-icon name="Palette" :size="16" />
+      <sph-icon name="Palette" :size="16" />
     </button>
     <div v-if="open" class="glass glass-strong theme-pop" role="listbox" aria-label="Themes">
       <p class="glabel" style="margin-bottom: 0.5rem">Theme</p>

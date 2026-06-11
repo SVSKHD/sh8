@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from "vue";
-import UsIcon from "./UsIcon.vue";
+import SphIcon from "./SphIcon.vue";
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -22,7 +22,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         <div class="flex items-center justify-between px-6 pt-5 pb-1">
           <h3 class="font-display m-0 text-2xl font-semibold italic">{{ title }}</h3>
           <button class="gbtn gbtn-ghost gbtn-icon" aria-label="Close" @click="$emit('update:modelValue', false)">
-            <us-icon name="X" :size="18" />
+            <sph-icon name="X" :size="18" />
           </button>
         </div>
         <div class="px-6 pb-6 pt-2"><slot /></div>

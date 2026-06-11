@@ -1,9 +1,9 @@
 <script setup>
 import { showDetail } from "../../composables/detail";
 import { fmtDate } from "../../utils/dates";
-import GlassCard from "../ui/GlassCard.vue";
-import PhotoPlaceholder from "../ui/PhotoPlaceholder.vue";
-import UsIcon from "../ui/UsIcon.vue";
+import SphGlassCard from "../ui/SphGlassCard.vue";
+import SphPhotoPlaceholder from "../ui/SphPhotoPlaceholder.vue";
+import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({ item: { type: Object, required: true } });
 defineEmits(["remove"]);
@@ -14,7 +14,7 @@ const open = () => showDetail("milestone", props.item);
 <template>
   <li class="tl-item rise">
     <div class="tl-dot"></div>
-    <glass-card
+    <sph-glass-card
       hover
       radius="1.25rem"
       pad="0.95rem 1.1rem"
@@ -35,14 +35,14 @@ const open = () => showDetail("milestone", props.item);
               aria-label="Delete milestone"
               @click.stop="$emit('remove')"
             >
-              <us-icon name="Trash2" :size="15" />
+              <sph-icon name="Trash2" :size="15" />
             </button>
           </div>
           <h3 class="font-display m-0 mt-0.5 text-2xl font-semibold leading-tight clamp-1">{{ item.title }}</h3>
           <p v-if="item.note" class="m-0 mt-1 text-sm leading-relaxed clamp-2" style="color: var(--ink-2)">{{ item.note }}</p>
         </div>
-        <photo-placeholder v-if="item.photo" label="photo" :height="92" class="tl-thumb" />
+        <sph-photo-placeholder v-if="item.photo" label="photo" :height="92" class="tl-thumb" />
       </div>
-    </glass-card>
+    </sph-glass-card>
   </li>
 </template>

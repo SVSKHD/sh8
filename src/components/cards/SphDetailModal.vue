@@ -3,10 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { detailState as d, relDate } from "../../composables/detail";
 import { useUsStore } from "../../stores/us";
 import { fmtDate as fmt } from "../../utils/dates";
-import GlassModal from "../ui/GlassModal.vue";
-import HeartRating from "../ui/HeartRating.vue";
-import PhotoPlaceholder from "../ui/PhotoPlaceholder.vue";
-import UsIcon from "../ui/UsIcon.vue";
+import SphGlassModal from "../ui/SphGlassModal.vue";
+import SphHeartRating from "../ui/SphHeartRating.vue";
+import SphPhotoPlaceholder from "../ui/SphPhotoPlaceholder.vue";
+import SphIcon from "../ui/SphIcon.vue";
 
 const state = useUsStore();
 const dir = ref(1);
@@ -21,7 +21,7 @@ const title = computed(
       visited: "Place we visited",
       note: "Note",
       gratitude: "Sweet note",
-    })[d.kind] || ""
+    })[d.kind] || "",
 );
 
 /* sibling items of the open card, in the same order as on screen */
@@ -77,7 +77,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 </script>
 
 <template>
-  <glass-modal v-model="d.open" :title="title">
+  <sph-glass-modal v-model="d.open" :title="title">
     <div v-if="d.item">
       <div class="detail-scroll" @touchstart="onTouchStart($event)" @touchend="onTouchEnd($event)">
         <div :key="d.item.id" class="detail-pane" :class="dir > 0 ? 'pane-next' : 'pane-prev'">
@@ -87,12 +87,12 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
               <span v-if="rel" class="chip">{{ rel }}</span>
             </div>
             <h2 class="font-display m-0 mt-1 text-3xl font-semibold leading-tight">{{ d.item.title }}</h2>
-            <photo-placeholder v-if="d.item.photo" label="drop a photo of this day" :height="190" class="mt-3" />
+            <sph-photo-placeholder v-if="d.item.photo" label="drop a photo of this day" :height="190" class="mt-3" />
             <p v-if="d.item.note" class="detail-body mt-3">{{ d.item.note }}</p>
           </template>
 
           <template v-else-if="d.kind === 'memory'">
-            <photo-placeholder label="memory photo" :height="200" />
+            <sph-photo-placeholder label="memory photo" :height="200" />
             <p class="detail-body mt-3" style="color: var(--ink)">{{ d.item.caption }}</p>
             <div class="flex items-center justify-between gap-2 flex-wrap mt-2">
               <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">{{ fmt(d.item.date) }}</p>
@@ -114,7 +114,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
               <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">{{ fmt(d.item.date) }}</p>
               <span v-if="rel" class="chip">{{ rel }}</span>
             </div>
-            <div class="mt-2"><heart-rating :model-value="d.item.rating" readonly :size="20" /></div>
+            <div class="mt-2"><sph-heart-rating :model-value="d.item.rating" readonly :size="20" /></div>
             <p v-if="d.item.story" class="detail-body mt-3">{{ d.item.story }}</p>
           </template>
 
@@ -136,13 +136,13 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 
       <!-- prev / next browsing between sibling cards -->
       <div v-if="list.length > 1" class="detail-nav">
-        <button class="gbtn gbtn-icon" aria-label="Previous" @click="step(-1)"><us-icon name="ChevronLeft" :size="17" /></button>
+        <button class="gbtn gbtn-icon" aria-label="Previous" @click="step(-1)"><sph-icon name="ChevronLeft" :size="17" /></button>
         <div class="text-center">
           <p class="detail-count m-0">{{ index + 1 }} of {{ list.length }}</p>
           <p class="detail-hint m-0">swipe or use ← →</p>
         </div>
-        <button class="gbtn gbtn-icon" aria-label="Next" @click="step(1)"><us-icon name="ChevronRight" :size="17" /></button>
+        <button class="gbtn gbtn-icon" aria-label="Next" @click="step(1)"><sph-icon name="ChevronRight" :size="17" /></button>
       </div>
     </div>
-  </glass-modal>
+  </sph-glass-modal>
 </template>

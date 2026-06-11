@@ -5,10 +5,34 @@ export const SEED_THEMES = { Hithesh: "rose", Spoorthy: "lavender" };
 
 export const LIST_SEEDS = {
   milestones: [
-    { id: uid(), date: "2022-03-14", title: "The day we met", note: "Rainy afternoon, the little coffee shop on 5th. You ordered my order before I did.", photo: true },
-    { id: uid(), date: "2022-04-02", title: "First date", note: "Pasta, terrible jokes, and neither of us wanted to go home.", photo: false },
-    { id: uid(), date: "2022-08-21", title: "First trip together", note: "The coast. We got lost twice and it became the best part.", photo: true },
-    { id: uid(), date: "2023-02-14", title: "Said “I love you”", note: "You said it first. I said it back before you finished.", photo: false },
+    {
+      id: uid(),
+      date: "2022-03-14",
+      title: "The day we met",
+      note: "Rainy afternoon, the little coffee shop on 5th. You ordered my order before I did.",
+      photo: true,
+    },
+    {
+      id: uid(),
+      date: "2022-04-02",
+      title: "First date",
+      note: "Pasta, terrible jokes, and neither of us wanted to go home.",
+      photo: false,
+    },
+    {
+      id: uid(),
+      date: "2022-08-21",
+      title: "First trip together",
+      note: "The coast. We got lost twice and it became the best part.",
+      photo: true,
+    },
+    {
+      id: uid(),
+      date: "2023-02-14",
+      title: "Said “I love you”",
+      note: "You said it first. I said it back before you finished.",
+      photo: false,
+    },
     { id: uid(), date: "2025-06-01", title: "Moved in together", note: "Forty boxes, one tiny kitchen, all ours.", photo: true },
   ],
   memories: [
@@ -27,13 +51,30 @@ export const LIST_SEEDS = {
   ],
   wishlist: [
     { id: uid(), name: "Kyoto in cherry blossom season", note: "Stay in a ryokan, slow mornings, tea.", priority: "Dream" },
-    { id: uid(), name: "Northern lights in Tromsø", note: "Cabin with a glass roof. Hot chocolate mandatory.", priority: "Someday" },
+    {
+      id: uid(),
+      name: "Northern lights in Tromsø",
+      note: "Cabin with a glass roof. Hot chocolate mandatory.",
+      priority: "Someday",
+    },
     { id: uid(), name: "That tiny ramen bar downtown", note: "The one with six seats we keep walking past.", priority: "Soon" },
     { id: uid(), name: "Santorini at golden hour", note: "For the anniversary, maybe?", priority: "Dream" },
   ],
   visited: [
-    { id: uid(), name: "Paris", date: "2023-05-19", rating: 5, story: "We climbed Montmartre at sunrise and shared one croissant because we were broke." },
-    { id: uid(), name: "Lisbon", date: "2024-09-30", rating: 4, story: "Tram 28, pasteis de nata, and you singing fado very badly." },
+    {
+      id: uid(),
+      name: "Paris",
+      date: "2023-05-19",
+      rating: 5,
+      story: "We climbed Montmartre at sunrise and shared one croissant because we were broke.",
+    },
+    {
+      id: uid(),
+      name: "Lisbon",
+      date: "2024-09-30",
+      rating: 4,
+      story: "Tram 28, pasteis de nata, and you singing fado very badly.",
+    },
     { id: uid(), name: "The lake cabin", date: "2025-08-15", rating: 5, story: "No wifi for three days. Best three days." },
   ],
   goals: [
@@ -55,8 +96,18 @@ export const LIST_SEEDS = {
   ],
   notes: [
     { id: uid(), title: "Cabin wifi", body: "network: lakehouse\npass: 2hearts1roof", date: "2025-08-15" },
-    { id: uid(), title: "Gift ideas", body: "that ceramic mug she pointed at twice\nfilm camera\npicnic blanket (red check)", date: "2026-05-30" },
-    { id: uid(), title: "Our pizza dough", body: "500g flour, 325ml water, 10g salt, 3g yeast.\ncold rise 48h — do NOT rush it again.", date: "2026-02-21" },
+    {
+      id: uid(),
+      title: "Gift ideas",
+      body: "that ceramic mug she pointed at twice\nfilm camera\npicnic blanket (red check)",
+      date: "2026-05-30",
+    },
+    {
+      id: uid(),
+      title: "Our pizza dough",
+      body: "500g flour, 325ml water, 10g salt, 3g yeast.\ncold rise 48h — do NOT rush it again.",
+      date: "2026-02-21",
+    },
   ],
   gratitudeForMe: [
     { id: uid(), date: "2026-06-08", note: "You brought me soup and stayed on the phone while I fell asleep." },

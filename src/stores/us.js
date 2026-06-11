@@ -24,8 +24,12 @@ function loadLocal() {
   const s = Object.assign(base, saved || {});
   // migrate old Me/You data to the two named users
   const NAME_MAP = { Me: "Hithesh", You: "Spoorthy" };
-  s.tasks.forEach((t) => { if (NAME_MAP[t.assignee]) t.assignee = NAME_MAP[t.assignee]; });
-  s.messages.forEach((m) => { if (NAME_MAP[m.from]) m.from = NAME_MAP[m.from]; });
+  s.tasks.forEach((t) => {
+    if (NAME_MAP[t.assignee]) t.assignee = NAME_MAP[t.assignee];
+  });
+  s.messages.forEach((m) => {
+    if (NAME_MAP[m.from]) m.from = NAME_MAP[m.from];
+  });
   // migrate single shared theme -> per-user themes
   if (saved && saved.theme && !saved.themes) s.themes = { Hithesh: saved.theme, Spoorthy: saved.theme };
   return s;
@@ -34,10 +38,7 @@ function loadLocal() {
 function createInitialState() {
   if (!db) return loadLocal();
   // Firestore mode: lists fill from snapshots (offline cache makes this instant)
-  return Object.assign(
-    { theme: "rose", themes: { ...SEED_THEMES } },
-    Object.fromEntries(LISTS.map((l) => [l, []]))
-  );
+  return Object.assign({ theme: "rose", themes: { ...SEED_THEMES } }, Object.fromEntries(LISTS.map((l) => [l, []])));
 }
 
 /* one-time demo seed so every tab looks alive on a fresh project */
@@ -153,8 +154,7 @@ export const useUsStore = defineStore("us", {
       if (!userName) return;
       if (!this.themes) this.themes = {};
       this.themes[userName] = themeId;
-      if (db)
-        setDoc(doc(db, sphCollection("settings"), "themes"), { [userName]: themeId }, { merge: true }).catch(() => {});
+      if (db) setDoc(doc(db, sphCollection("settings"), "themes"), { [userName]: themeId }, { merge: true }).catch(() => {});
     },
   },
 });

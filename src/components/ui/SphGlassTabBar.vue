@@ -1,6 +1,6 @@
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import UsIcon from "./UsIcon.vue";
+import SphIcon from "./SphIcon.vue";
 
 const props = defineProps({
   tabs: { type: Array, required: true },
@@ -27,7 +27,10 @@ const place = () => {
       bar.value.scrollTo({ left: right - bar.value.clientWidth, behavior: "smooth" });
   }
 };
-watch(() => props.modelValue, () => nextTick(place));
+watch(
+  () => props.modelValue,
+  () => nextTick(place),
+);
 onMounted(() => {
   nextTick(place);
   setTimeout(place, 350); // after fonts settle
@@ -51,7 +54,7 @@ onBeforeUnmount(() => window.removeEventListener("resize", place));
       :aria-label="t.label"
       @click="$emit('update:modelValue', t.id)"
     >
-      <us-icon :name="t.icon" :size="20" />
+      <sph-icon :name="t.icon" :size="20" />
       <span class="tab-tip">{{ t.label }}</span>
     </button>
   </nav>

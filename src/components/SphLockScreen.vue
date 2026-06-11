@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { burstHearts } from "../composables/burstHearts";
 import { USERS } from "../users";
-import UsIcon from "./ui/UsIcon.vue";
+import SphIcon from "./ui/SphIcon.vue";
 
 const emit = defineEmits(["unlock"]);
 
@@ -66,7 +66,9 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
   <div class="lock-wrap">
     <span v-for="h in hearts" :key="h.id" class="float-heart" :style="h.style">♥</span>
     <div class="glass glass-strong lock-card" :class="{ shake: shaking }">
-      <div class="inline-flex items-center justify-center mb-2" style="color: var(--accent)"><us-icon name="Lock" :size="22" /></div>
+      <div class="inline-flex items-center justify-center mb-2" style="color: var(--accent)">
+        <sph-icon name="Lock" :size="22" />
+      </div>
       <h1 class="font-display m-0 text-5xl font-semibold italic">Us <span style="color: var(--accent)">❤</span></h1>
       <p class="m-0 mt-1.5 text-sm" style="color: var(--ink-2)">Enter our code</p>
       <div class="pin-dots">
@@ -82,7 +84,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
           :aria-label="k.t === 'back' ? 'Delete digit' : k.v"
           @click="press(k)"
         >
-          <us-icon v-if="k.t === 'back'" name="Delete" :size="20" />
+          <sph-icon v-if="k.t === 'back'" name="Delete" :size="20" />
           <template v-else>{{ k.v }}</template>
         </button>
       </div>

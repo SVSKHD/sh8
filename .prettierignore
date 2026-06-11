@@ -1,0 +1,5 @@
+node_modules
+dist
+dist-emu
+package-lock.json
+firestore-debug.log

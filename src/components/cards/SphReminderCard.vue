@@ -1,23 +1,16 @@
 <script setup>
 import { computed } from "vue";
+import { daysUntil, getNextDueDate } from "../../utils/dates";
 import SphGlassCard from "../ui/SphGlassCard.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({ item: { type: Object, required: true } });
 defineEmits(["remove"]);
 
-const DAY = 86400000;
 function reminderInfo(r) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const start = new Date(r.startDate + "T00:00:00");
-  const interval = Number(r.intervalDays) || 0;
-  let next = start;
-  if (interval > 0 && start < today) {
-    const diff = Math.floor((today - start) / DAY);
-    next = new Date(start.getTime() + Math.ceil(diff / interval) * interval * DAY);
-  }
-  const daysLeft = Math.round((next - today) / DAY);
+  const interval = Math.max(0, Math.floor(Number(r.intervalDays) || 0));
+  const next = getNextDueDate(r.startDate, interval);
+  const daysLeft = next ? daysUntil(next) : 0;
   let frac = 0;
   if (interval > 0) frac = Math.max(0, Math.min(1, (interval - daysLeft) / interval));
   return { next, daysLeft, frac, interval };

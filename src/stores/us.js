@@ -112,6 +112,14 @@ export const useUsStore = defineStore("us", {
       if (i > -1) this[list].splice(i, 1);
       this._delete(list, id);
     },
+    /* generic patch: merge fields into an existing item and sync it */
+    updateItem(list, id, patch) {
+      const it = this[list].find((x) => x.id === id);
+      if (!it) return null;
+      Object.assign(it, patch);
+      this._write(list, it);
+      return it;
+    },
     toggleFavorite(id) {
       const m = this.memories.find((x) => x.id === id);
       if (!m) return;

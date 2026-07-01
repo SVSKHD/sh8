@@ -8,7 +8,7 @@ import SphGratitudeList from "../components/cards/SphGratitudeList.vue";
 import SphMemoryCard from "../components/cards/SphMemoryCard.vue";
 import SphNoteCard from "../components/cards/SphNoteCard.vue";
 import SphPlaceCard from "../components/cards/SphPlaceCard.vue";
-import SphReminderCard from "../components/cards/SphReminderCard.vue";
+import SphReminderList from "../components/cards/SphReminderList.vue";
 import SphTaskItem from "../components/cards/SphTaskItem.vue";
 import SphTimelineItem from "../components/cards/SphTimelineItem.vue";
 import SphGreetingCard from "../components/SphGreetingCard.vue";
@@ -121,20 +121,6 @@ const FORMS = {
     ],
     blank: () => ({ title: "", assignee: "Me", due: "", done: false }),
     valid: (f) => f.title.trim(),
-  },
-  reminders: {
-    title: "Add a reminder",
-    list: "reminders",
-    fields: [
-      { k: "title", label: "Reminder", type: "text", placeholder: "Don’t let us forget…" },
-      { k: "startDate", label: "First date", type: "date" },
-      { k: "intervalDays", label: "Repeat every (days)", type: "number", placeholder: "e.g. 25 — leave 0 for once" },
-    ],
-    blank: () => ({ title: "", startDate: today(), intervalDays: 30 }),
-    valid: (f) => f.title.trim() && f.startDate,
-    normalize: (f) => {
-      f.intervalDays = Math.max(0, parseInt(f.intervalDays, 10) || 0);
-    },
   },
   notes: {
     title: "Add a note",
@@ -440,16 +426,7 @@ const lock = () => {
 
         <section v-else-if="active === 'reminders'" key="reminders" class="tab-section">
           <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">So we never forget</h2>
-          <div v-if="state.reminders.length" class="grid gap-3">
-            <sph-reminder-card
-              v-for="(r, i) in state.reminders"
-              :key="r.id"
-              :item="r"
-              :style="{ '--i': i }"
-              @remove="store.removeItem('reminders', r.id)"
-            />
-          </div>
-          <sph-empty-state v-else emoji="🔔" message="Nothing to remember yet." hint="Add a date and how often it repeats." />
+          <sph-reminder-list :user-id="user.name" />
         </section>
 
         <section v-else-if="active === 'notes'" key="notes" class="tab-section">

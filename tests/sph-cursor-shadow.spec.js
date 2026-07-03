@@ -18,6 +18,13 @@ describe("SphCursorShadow", () => {
     window.matchMedia = mm(true); // restore the setup default (reduced motion)
   });
 
+  it("defaults to a multiply blend and can switch to screen for dark themes", () => {
+    const light = mount(SphCursorShadow);
+    expect(light.find(".cursor-love").attributes("style")).toContain("mix-blend-mode: multiply");
+    const dark = mount(SphCursorShadow, { props: { blendMode: "screen" } });
+    expect(dark.find(".cursor-love").attributes("style")).toContain("mix-blend-mode: screen");
+  });
+
   it("renders a glow tinted by the theme color", () => {
     const w = mount(SphCursorShadow, { props: { heartColor: "#1f8fa8", glowColor: "#1f8fa8" } });
     expect(w.find(".cl-glow").exists()).toBe(true);

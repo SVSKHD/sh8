@@ -1,8 +1,14 @@
-/* Google Calendar sync for reminders — client-side only OAuth via Google
-   Identity Services (GIS) token flow, no backend, no npm dependency (the
-   GIS script is lazily injected). Leave VITE_GOOGLE_CLIENT_ID unset and
-   reminders stay fully local; every call here is optional and never throws
-   into its caller — failures just leave the reminder unsynced. */
+/* Google Calendar sync — client-side only OAuth via Google Identity Services
+   (GIS) token flow, no backend, no npm dependency (the GIS script is lazily
+   injected). Leave VITE_GOOGLE_CLIENT_ID unset and reminders/wishes stay
+   fully local; every call here is optional and never throws into its
+   caller — failures just leave the item unsynced.
+
+   Two payload builders sit on top of the same generic create/update/delete
+   primitives: `buildEventPayload` (all-day, recurring — reminders) and
+   `buildWishEventPayload` (timed, one-off, with the recipient invited as an
+   attendee — wishes). Reminder-specific wrappers below keep the exact
+   signatures useReminders.js already depends on. */
 import { ref } from "vue";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -118,6 +124,12 @@ function addDays(dateStr, n) {
   d.setDate(d.getDate() + n);
   return isoLocalDate(d);
 }
+function addMinutes(dateTimeLocal, n) {
+  const d = new Date(dateTimeLocal);
+  d.setMinutes(d.getMinutes() + n);
+  const pad = (x) => String(x).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+}
 
 /* Pure — builds the Calendar API event body for a reminder. All-day event
    (exclusive end date = anchor + 1 day); a recurring RRULE when the
@@ -136,6 +148,30 @@ export function buildEventPayload(reminder) {
   return payload;
 }
 
+/* Pure — builds the Calendar API event body for a scheduled wish. A timed,
+   one-off event (not all-day, no recurrence) with the recipient invited as
+   an attendee — this event is created on the SENDER's own calendar (the
+   only account this app can act on), and Google's own invite/notification
+   is what actually reaches the recipient. The description is deliberately
+   generic — the wish's real message stays in-app, never on a calendar
+   entry anyone else could see. */
+export function buildWishEventPayload(wish, recipientEmail) {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const payload = {
+    summary: "Open the app 💌",
+    description: "A scheduled wish is waiting for you in Us ❤",
+    start: { dateTime: wish.scheduledDate + ":00", timeZone: tz },
+    end: { dateTime: addMinutes(wish.scheduledDate, 30), timeZone: tz },
+    reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 60 }] },
+  };
+  if (recipientEmail) payload.attendees = [{ email: recipientEmail }];
+  return payload;
+}
+
+function buildQuery(opts) {
+  return opts && opts.sendUpdates ? "?sendUpdates=" + encodeURIComponent(opts.sendUpdates) : "";
+}
+
 async function apiFetch(path, options) {
   const token = await ensureFreshToken();
   if (!token) return null;
@@ -151,15 +187,17 @@ async function apiFetch(path, options) {
   return res;
 }
 
-/* Create/update/delete the calendar event mirroring a reminder. All three
-   are best-effort: any failure resolves to null/false rather than throwing,
-   so a sync problem never blocks the local reminder from working. */
-export async function createReminderEvent(reminder) {
+/* Generic create/update/delete against the connected user's own calendar.
+   `opts.sendUpdates`: 'all' | 'externalOnly' | 'none' — passed through as
+   the Calendar API's own query param. All three are best-effort: any
+   failure resolves to null/false rather than throwing, so a sync problem
+   never blocks the local item from working. */
+export async function createEvent(payload, opts) {
   try {
-    const res = await apiFetch("", {
+    const res = await apiFetch(buildQuery(opts), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildEventPayload(reminder)),
+      body: JSON.stringify(payload),
     });
     if (!res || !res.ok) return null;
     const data = await res.json();
@@ -169,13 +207,13 @@ export async function createReminderEvent(reminder) {
   }
 }
 
-export async function updateReminderEvent(eventId, reminder) {
+export async function updateEvent(eventId, payload, opts) {
   if (!eventId) return null;
   try {
-    const res = await apiFetch("/" + encodeURIComponent(eventId), {
+    const res = await apiFetch("/" + encodeURIComponent(eventId) + buildQuery(opts), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildEventPayload(reminder)),
+      body: JSON.stringify(payload),
     });
     if (!res || !res.ok) return null;
     const data = await res.json();
@@ -185,13 +223,26 @@ export async function updateReminderEvent(eventId, reminder) {
   }
 }
 
-export async function deleteReminderEvent(eventId) {
+export async function deleteEvent(eventId, opts) {
   if (!eventId) return true;
   try {
-    const res = await apiFetch("/" + encodeURIComponent(eventId), { method: "DELETE" });
+    const res = await apiFetch("/" + encodeURIComponent(eventId) + buildQuery(opts), { method: "DELETE" });
+    // no token available — nothing was attempted, so this is NOT a confirmed
+    // delete; don't let a caller mistake "couldn't try" for "succeeded"
+    if (!res) return false;
     // 404/410: already gone — treat as success either way
-    return !res || res.ok || res.status === 404 || res.status === 410;
+    return res.ok || res.status === 404 || res.status === 410;
   } catch (e) {
     return false;
   }
+}
+
+export function createReminderEvent(reminder) {
+  return createEvent(buildEventPayload(reminder));
+}
+export function updateReminderEvent(eventId, reminder) {
+  return updateEvent(eventId, buildEventPayload(reminder));
+}
+export function deleteReminderEvent(eventId) {
+  return deleteEvent(eventId);
 }

@@ -14,6 +14,10 @@ const props = defineProps({
   heartColor: { type: String, default: "#e0526f" },
   glowColor: { type: String, default: "#e0526f" },
   rippleColor: { type: String, default: "#e0526f" },
+  /* "multiply" tints/darkens on light themes (never black); "screen" brightens
+     on dark themes instead, since multiply there would muddy the glow toward
+     black. Pass mode === 'dark' ? 'screen' : 'multiply'. */
+  blendMode: { type: String, default: "multiply" },
   /* base heart size in px */
   size: { type: Number, default: 18 },
   /* hearts spawned per cluster */
@@ -170,7 +174,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="cursor-love" aria-hidden="true">
+  <div class="cursor-love" aria-hidden="true" :style="{ mixBlendMode: blendMode }">
     <!-- soft glow that rides the cursor -->
     <div
       ref="glow"
@@ -217,7 +221,6 @@ onBeforeUnmount(() => {
   z-index: 9998;
   pointer-events: none;
   overflow: hidden;
-  mix-blend-mode: multiply;
 }
 .cl-glow {
   position: absolute;

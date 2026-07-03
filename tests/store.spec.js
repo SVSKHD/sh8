@@ -13,6 +13,8 @@ describe("sph collection naming", () => {
       "wishlist",
       "visited",
       "places",
+      "plans",
+      "wishes",
       "goals",
       "tasks",
       "reminders",
@@ -42,6 +44,8 @@ describe("useUsStore (localStorage fallback)", () => {
     expect(store.wishlist.length).toBeGreaterThan(0);
     expect(store.visited.length).toBeGreaterThan(0);
     expect(store.places.length).toBeGreaterThan(0);
+    expect(store.plans.length).toBeGreaterThan(0);
+    expect(store.wishes).toEqual([]); // no demo wishes — private per-couple content, not seeded
     expect(store.goals.length).toBeGreaterThan(0);
     expect(store.tasks.length).toBeGreaterThan(0);
     expect(store.reminders.length).toBeGreaterThan(0);
@@ -143,6 +147,16 @@ describe("useUsStore (localStorage fallback)", () => {
     expect(store.themes.Spoorthy).toBe("noir");
   });
 
+  it("setEmail saves each user's Google account email to their own slot", () => {
+    const store = useUsStore();
+    expect(store.emails).toEqual({});
+    store.setEmail("hithesh@example.com", "Hithesh");
+    expect(store.emails.Hithesh).toBe("hithesh@example.com");
+    store.setEmail("spoorthy@example.com", "Spoorthy");
+    expect(store.emails.Hithesh).toBe("hithesh@example.com");
+    expect(store.emails.Spoorthy).toBe("spoorthy@example.com");
+  });
+
   it("persists state to localStorage after init", async () => {
     const store = useUsStore();
     store.init();
@@ -159,5 +173,20 @@ describe("useUsStore (localStorage fallback)", () => {
     return Promise.resolve().then(() => {
       expect(document.documentElement.dataset.theme).toBe("golden");
     });
+  });
+
+  it("applies the active theme's light/dark mode to <html data-mode>", () => {
+    const store = useUsStore();
+    store.init();
+    store.setTheme("golden", "Hithesh");
+    return Promise.resolve()
+      .then(() => {
+        expect(document.documentElement.dataset.mode).toBe("light");
+        store.setTheme("eclipse", "Hithesh");
+        return Promise.resolve();
+      })
+      .then(() => {
+        expect(document.documentElement.dataset.mode).toBe("dark");
+      });
   });
 });

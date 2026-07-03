@@ -8,6 +8,7 @@ import SphGratitudeList from "../components/cards/SphGratitudeList.vue";
 import SphMemoryCard from "../components/cards/SphMemoryCard.vue";
 import SphNoteCard from "../components/cards/SphNoteCard.vue";
 import SphPlaceCard from "../components/cards/SphPlaceCard.vue";
+import SphPlacesPanel from "../components/cards/SphPlacesPanel.vue";
 import SphReminderList from "../components/cards/SphReminderList.vue";
 import SphTaskItem from "../components/cards/SphTaskItem.vue";
 import SphTimelineItem from "../components/cards/SphTimelineItem.vue";
@@ -36,6 +37,7 @@ const TABS = [
   { id: "gallery", icon: "Images", label: "Gallery" },
   { id: "wishlist", icon: "MapPin", label: "Places to Visit" },
   { id: "visited", icon: "Map", label: "Places We Visited" },
+  { id: "places", icon: "Compass", label: "Places" },
   { id: "goals", icon: "Target", label: "Goals" },
   { id: "tasks", icon: "ListChecks", label: "Tasks" },
   { id: "reminders", icon: "BellRing", label: "Reminders" },
@@ -391,6 +393,11 @@ const lock = () => {
             />
           </div>
           <sph-empty-state v-else emoji="✈️" message="No trips logged yet." />
+        </section>
+
+        <section v-else-if="active === 'places'" key="places" class="tab-section">
+          <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">Our shared map</h2>
+          <sph-places-panel :user-id="user.name" />
         </section>
 
         <section v-else-if="active === 'goals'" key="goals" class="tab-section">

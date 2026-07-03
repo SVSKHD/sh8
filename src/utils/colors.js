@@ -23,6 +23,17 @@ export function parseColor(str) {
   return null;
 }
 
+/* Lighten (amount > 0, toward white) or darken (amount < 0, toward black) a
+   color by a fraction in −1…1. Returns an rgb() string; unparseable → input. */
+export function shade(color, amount) {
+  const c = parseColor(color);
+  if (!c) return color;
+  const target = amount >= 0 ? 255 : 0;
+  const t = Math.min(1, Math.abs(amount));
+  const mix = (v) => Math.round(v + (target - v) * t);
+  return `rgb(${mix(c.r)}, ${mix(c.g)}, ${mix(c.b)})`;
+}
+
 /* Relative luminance (sRGB, 0 = black … 1 = white). */
 export function luminance({ r, g, b }) {
   const f = (c) => {

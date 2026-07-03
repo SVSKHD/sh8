@@ -20,7 +20,7 @@ const { bg, accent } = useThemeColors();
     <!-- themed twinkling stars sit behind all content (z-index: -1) -->
     <sph-themed-stars :theme-color="bg" :count="70" />
     <router-view />
-    <!-- glowing cursor trail floats above content, ignores pointer events -->
-    <sph-cursor-shadow :color="accent" />
+    <!-- glowing cursor with a love tail + touch ripple; colors come from the active theme -->
+    <sph-cursor-shadow :heart-color="accent" :glow-color="accent" :ripple-color="accent" />
   </div>
 </template>

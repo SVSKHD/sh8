@@ -127,6 +127,7 @@ export const LIST_SEEDS = {
       date: "2026-07-18",
       status: "planned",
       addedBy: "Hithesh",
+      forWhom: "Both",
       image: null,
       linkedPlaceId: null,
       linkedReminderId: null,
@@ -140,6 +141,7 @@ export const LIST_SEEDS = {
       date: "",
       status: "idea",
       addedBy: "Spoorthy",
+      forWhom: "Both",
       image: null,
       linkedPlaceId: null,
       linkedReminderId: null,
@@ -153,6 +155,7 @@ export const LIST_SEEDS = {
       date: "2026-05-30",
       status: "done",
       addedBy: "Hithesh",
+      forWhom: "Both",
       image: null,
       linkedPlaceId: null,
       linkedReminderId: null,
@@ -167,10 +170,10 @@ export const LIST_SEEDS = {
     { id: uid(), title: "Run a 10k side by side", targetDate: "2026-10-04", progress: 80 },
   ],
   tasks: [
-    { id: uid(), title: "Book anniversary dinner", assignee: "Spoorthy", due: "2026-06-20", done: false },
-    { id: uid(), title: "Print photos for the hallway", assignee: "Hithesh", due: "2026-06-14", done: false },
-    { id: uid(), title: "Plan the weekend hike", assignee: "Spoorthy", due: "2026-06-12", done: true },
-    { id: uid(), title: "Buy a second reading lamp", assignee: "Hithesh", due: "", done: false },
+    { id: uid(), title: "Book anniversary dinner", forWhom: "Spoorthy", addedBy: "Hithesh", due: "2026-06-20", done: false },
+    { id: uid(), title: "Print photos for the hallway", forWhom: "Hithesh", addedBy: "Spoorthy", due: "2026-06-14", done: false },
+    { id: uid(), title: "Plan the weekend hike", forWhom: "Both", addedBy: "Spoorthy", due: "2026-06-12", done: true },
+    { id: uid(), title: "Buy a second reading lamp", forWhom: "Hithesh", addedBy: "Hithesh", due: "", done: false },
   ],
   reminders: [
     {

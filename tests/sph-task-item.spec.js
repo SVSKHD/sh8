@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import SphTaskItem from "../src/components/cards/SphTaskItem.vue";
 
-const item = (over = {}) => ({ id: "t1", title: "Book dinner", assignee: "Hithesh", due: "2026-06-20", done: false, ...over });
+const item = (over = {}) => ({ id: "t1", title: "Book dinner", forWhom: "Hithesh", due: "2026-06-20", done: false, ...over });
 
 describe("SphTaskItem", () => {
   it("renders the title and due date", () => {
@@ -19,9 +19,16 @@ describe("SphTaskItem", () => {
   });
 
   it("shows the partner's name outlined for their tasks", () => {
-    const w = mount(SphTaskItem, { props: { item: item({ assignee: "Spoorthy" }), me: "Hithesh" } });
+    const w = mount(SphTaskItem, { props: { item: item({ forWhom: "Spoorthy" }), me: "Hithesh" } });
     const chip = w.find(".chip");
     expect(chip.text()).toBe("Spoorthy");
+    expect(chip.classes()).toContain("chip-outline");
+  });
+
+  it("shows Both outlined when a task is for both of you", () => {
+    const w = mount(SphTaskItem, { props: { item: item({ forWhom: "Both" }), me: "Hithesh" } });
+    const chip = w.find(".chip");
+    expect(chip.text()).toBe("Both");
     expect(chip.classes()).toContain("chip-outline");
   });
 

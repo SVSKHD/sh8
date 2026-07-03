@@ -28,12 +28,18 @@ const STATUS_OPTIONS = [
   { value: "planned", label: "Planned" },
   { value: "done", label: "Done" },
 ];
+const FOR_WHOM_OPTIONS = [
+  { value: "Both", label: "Both of us" },
+  { value: "Hithesh", label: "Hithesh" },
+  { value: "Spoorthy", label: "Spoorthy" },
+];
 
 const blankForm = () => ({
   title: "",
   details: "",
   date: "",
   status: "idea",
+  forWhom: "Both",
   image: null,
   linkedPlaceId: "",
   linkedReminderId: "",
@@ -61,6 +67,7 @@ watch(
       form.details = p.details ?? "";
       form.date = p.date ?? "";
       form.status = p.status ?? "idea";
+      form.forWhom = p.forWhom ?? "Both";
       form.image = p.image ?? null;
       form.linkedPlaceId = p.linkedPlaceId ?? "";
       form.linkedReminderId = p.linkedReminderId ?? "";
@@ -113,6 +120,7 @@ const save = () => {
     details: form.details.trim(),
     date: form.date,
     status: form.status,
+    forWhom: form.forWhom,
     image: form.image,
     linkedPlaceId: form.linkedPlaceId || null,
     linkedReminderId: form.linkedReminderId || null,
@@ -147,6 +155,7 @@ const save = () => {
       <sph-glass-input v-model="form.details" label="Details (optional)" type="textarea" placeholder="The when, where, how…" />
       <sph-glass-input v-model="form.date" label="Date (optional)" type="date" />
       <sph-glass-select v-model="form.status" label="Status" :options="STATUS_OPTIONS" />
+      <sph-glass-select v-model="form.forWhom" label="For" :options="FOR_WHOM_OPTIONS" />
       <sph-glass-photo-input v-model="form.image" label="Photo (optional)" />
       <sph-glass-select
         v-if="placeOptions.length"

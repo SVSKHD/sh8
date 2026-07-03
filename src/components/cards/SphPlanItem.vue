@@ -35,6 +35,7 @@ const linkedChips = computed(() =>
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <h3 class="font-display m-0 text-2xl font-semibold leading-tight clamp-1">{{ item.title }}</h3>
+          <span v-if="item.forWhom && item.forWhom !== 'Both'" class="chip chip-outline">for {{ item.forWhom }}</span>
         </div>
         <p v-if="item.date" class="m-0 mt-0.5 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">
           {{ fmtDate(item.date) }}

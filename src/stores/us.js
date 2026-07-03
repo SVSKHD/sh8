@@ -26,7 +26,11 @@ function loadLocal() {
   // migrate old Me/You data to the two named users
   const NAME_MAP = { Me: "Hithesh", You: "Spoorthy" };
   s.tasks.forEach((t) => {
-    if (NAME_MAP[t.assignee]) t.assignee = NAME_MAP[t.assignee];
+    // legacy field name: tasks used to carry `assignee` — now `forWhom`,
+    // consistent with the addedBy/forWhom pattern places/plans already use
+    if (!t.forWhom && t.assignee) t.forWhom = t.assignee;
+    if (NAME_MAP[t.forWhom]) t.forWhom = NAME_MAP[t.forWhom];
+    if (!t.forWhom) t.forWhom = "Both";
   });
   s.messages.forEach((m) => {
     if (NAME_MAP[m.from]) m.from = NAME_MAP[m.from];

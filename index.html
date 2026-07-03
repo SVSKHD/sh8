@@ -4,9 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#fdf2f5" />
+    <!-- iOS PWA chrome: standalone display + a translucent status bar so the
+         page's own (theme-tinted) background shows through, since iOS only
+         offers "default" (dark text) or "black-translucent" (light text,
+         see-through) — there's no per-theme text-color hook beyond that. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Us" />
     <title>Us ❤</title>
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="manifest" id="app-manifest" href="/manifest.webmanifest" />
     <link rel="icon" id="app-favicon" href="/icon.svg" />
+    <link rel="apple-touch-icon" id="app-apple-touch-icon" href="/icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link

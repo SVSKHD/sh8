@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { LOVE_QUOTES } from "../quotes";
 import SphGlassCard from "./ui/SphGlassCard.vue";
 import SphIcon from "./ui/SphIcon.vue";
 
@@ -100,6 +101,11 @@ async function fetchWeather() {
   return data;
 }
 
+/* one quote, chosen once when the card mounts and frozen for the rest of
+   the session — deliberately not cycling, so it stays out of the way of
+   scanning the rest of the card */
+const loveQuote = LOVE_QUOTES[Math.floor(Math.random() * LOVE_QUOTES.length)];
+
 const wx = ref(null);
 const h = new Date().getHours();
 const greeting = h < 12 ? "good morning" : h < 17 ? "good afternoon" : "good evening";
@@ -125,6 +131,9 @@ onMounted(() => {
         <p class="m-0 mt-1 text-xs" style="color: var(--ink-3)">
           {{ dateStr }} ·
           <span class="font-display italic" style="font-size: 0.95rem; color: var(--ink-2)">“{{ quote }}”</span>
+        </p>
+        <p class="greet-love-quote font-display italic">
+          “{{ loveQuote.text }}”<span v-if="loveQuote.author" class="greet-love-author">— {{ loveQuote.author }}</span>
         </p>
       </div>
       <div v-if="wx" class="flex items-center gap-3" style="flex: 0 0 auto">

@@ -33,9 +33,7 @@ const toggle = (ev) => {
         <p class="task-title m-0 text-sm font-medium" :class="{ done: item.done }">{{ item.title }}</p>
         <p v-if="item.due" class="m-0 text-xs mt-0.5" style="color: var(--ink-3)">due {{ fmtDate(item.due) }}</p>
       </div>
-      <span class="chip" :class="{ 'chip-outline': item.assignee !== me }">{{
-        item.assignee === me ? "Me" : item.assignee
-      }}</span>
+      <span class="chip" :class="{ 'chip-outline': item.forWhom !== me }">{{ item.forWhom === me ? "Me" : item.forWhom }}</span>
       <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete task" @click="$emit('remove')">
         <sph-icon name="Trash2" :size="14" />
       </button>

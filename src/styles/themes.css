@@ -1097,6 +1097,24 @@ html[data-mode="dark"] .chip {
   max-width: 12rem;
 }
 
+/* one frozen-for-the-session love quote, visually subordinate to the
+   greeting/mood line above it — small, muted, tight line-height so it never
+   materially grows the card on mobile */
+.greet-love-quote {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  opacity: 0.6;
+  color: var(--ink-2);
+}
+.greet-love-author {
+  display: block;
+  margin-top: 0.05rem;
+  font-size: 0.68rem;
+  font-style: normal;
+  color: var(--ink-3);
+}
+
 /* ============ notes ============ */
 
 .note-body {

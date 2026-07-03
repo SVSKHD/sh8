@@ -2,7 +2,6 @@
 import SphCursorShadow from "./components/ui/SphCursorShadow.vue";
 import SphThemedStars from "./components/ui/SphThemedStars.vue";
 import FloatingLoveField from "./components/ui/FloatingLoveField.vue";
-import LoveQuotes from "./components/ui/LoveQuotes.vue";
 import { useThemeColors } from "./composables/themeColors";
 import { useUsStore } from "./stores/us";
 
@@ -23,9 +22,6 @@ const { bg, accent, mode } = useThemeColors();
     <sph-themed-stars :theme-color="bg" :count="70" />
     <floating-love-field :theme-color="accent" :mode="mode" />
     <router-view />
-    <!-- rotating love quotes float above content but stay non-blocking and
-         below the cursor layer -->
-    <love-quotes />
     <!-- glowing cursor with a love tail + touch ripple; colors + blend mode
          come from the active theme (screen brightens on dark themes instead
          of multiply darkening them toward black) -->

@@ -23,12 +23,14 @@ import SphGlassPhotoInput from "../components/ui/SphGlassPhotoInput.vue";
 import SphGlassSelect from "../components/ui/SphGlassSelect.vue";
 import SphGlassTabBar from "../components/ui/SphGlassTabBar.vue";
 import SphHeartRating from "../components/ui/SphHeartRating.vue";
+import SphSegmentedFilter from "../components/ui/SphSegmentedFilter.vue";
 import SphThemeSwitcher from "../components/ui/SphThemeSwitcher.vue";
 import SphIcon from "../components/ui/SphIcon.vue";
 import { detailState } from "../composables/detail";
+import { useFilterPref } from "../composables/useFilterPref";
 import { scheduleWishDelivery, useWishes } from "../composables/useWishes";
 import { useUsStore } from "../stores/us";
-import { userByName } from "../users";
+import { USERS, userByName } from "../users";
 
 const store = useUsStore();
 const state = store;
@@ -123,11 +125,14 @@ const FORMS = {
     list: "tasks",
     fields: [
       { k: "title", label: "Task", type: "text", placeholder: "What needs doing?" },
-      { k: "assignee", label: "Who's on it", type: "select", options: ["Hithesh", "Spoorthy"] },
+      { k: "forWhom", label: "For", type: "select", options: ["Hithesh", "Spoorthy", "Both"] },
       { k: "due", label: "Due", type: "date" },
     ],
-    blank: () => ({ title: "", assignee: "Me", due: "", done: false }),
+    blank: () => ({ title: "", forWhom: "Both", due: "", done: false }),
     valid: (f) => f.title.trim(),
+    normalize: (f) => {
+      f.addedBy = user.value && user.value.name;
+    },
   },
   notes: {
     title: "Add a note",
@@ -301,11 +306,30 @@ const formCfg = computed(() => FORMS[active.value]);
 const sortedMilestones = computed(() => state.milestones.slice().sort((a, b) => (a.date < b.date ? -1 : 1)));
 const sortedTasks = computed(() => state.tasks.slice().sort((a, b) => Number(a.done) - Number(b.done)));
 
+/* per-person filter over the shared Tasks list — trust-based like every
+   other identity check in this app (see SphLockScreen): it hides items in
+   the UI, it doesn't enforce access. `partnerName` is derived rather than
+   hardcoded so the same filter works no matter who's logged in. */
+const partnerName = computed(() => (user.value && Object.values(USERS).find((u) => u.name !== user.value.name)?.name) || "");
+const taskFilter = useFilterPref("us-filter-tasks", "both");
+const taskFilterOptions = computed(() => [
+  { value: "partner", label: "For " + partnerName.value },
+  { value: "me", label: "For me" },
+  { value: "both", label: "Both" },
+]);
+const filteredTasks = computed(() =>
+  sortedTasks.value.filter((t) => {
+    if (taskFilter.value === "me") return t.forWhom === (user.value && user.value.name);
+    if (taskFilter.value === "partner") return t.forWhom === partnerName.value;
+    return t.forWhom === "Both";
+  }),
+);
+
 const openAdd = () => {
   const blank = formCfg.value.blank();
   Object.keys(form).forEach((k) => delete form[k]);
   Object.assign(form, blank);
-  if ("assignee" in form && user.value) form.assignee = user.value.name;
+  if ("forWhom" in form && user.value) form.forWhom = user.value.name;
   showAdd.value = true;
 };
 const saveAdd = () => {
@@ -456,10 +480,13 @@ const lock = () => {
         </section>
 
         <section v-else-if="active === 'tasks'" key="tasks" class="tab-section">
-          <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">Our little to-dos</h2>
-          <div v-if="state.tasks.length" class="grid gap-2">
+          <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+            <h2 class="font-display m-0 text-3xl font-semibold italic">Our little to-dos</h2>
+            <sph-segmented-filter v-model="taskFilter" :options="taskFilterOptions" />
+          </div>
+          <div v-if="filteredTasks.length" class="grid gap-2">
             <sph-task-item
-              v-for="(t, i) in sortedTasks"
+              v-for="(t, i) in filteredTasks"
               :key="t.id"
               :item="t"
               :me="user.name"
@@ -468,7 +495,7 @@ const lock = () => {
               @remove="store.removeItem('tasks', t.id)"
             />
           </div>
-          <sph-empty-state v-else emoji="✅" message="All clear, lovebirds." />
+          <sph-empty-state v-else emoji="✅" message="Nothing here — try a different filter." />
         </section>
 
         <section v-else-if="active === 'reminders'" key="reminders" class="tab-section">

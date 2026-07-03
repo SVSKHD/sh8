@@ -8,11 +8,14 @@ import { fmtDate } from "../../utils/dates";
 import { usePlaces } from "../../composables/usePlaces";
 import { usePlans } from "../../composables/usePlans";
 import { useReminders } from "../../composables/useReminders";
+import { useFilterPref } from "../../composables/useFilterPref";
 import { useWishes } from "../../composables/useWishes";
+import { USERS } from "../../users";
 import SphEmptyState from "../ui/SphEmptyState.vue";
 import SphIcon from "../ui/SphIcon.vue";
 import SphPlanForm from "./SphPlanForm.vue";
 import SphPlanItem from "./SphPlanItem.vue";
+import SphSegmentedFilter from "../ui/SphSegmentedFilter.vue";
 
 const props = defineProps({ userId: { type: String, default: "" } });
 
@@ -20,6 +23,23 @@ const Pl = usePlans(() => props.userId);
 const Pc = usePlaces(() => props.userId);
 const R = useReminders(() => props.userId);
 const W = useWishes(() => props.userId);
+
+/* per-person filter over the shared Plans list — trust-based, like every
+   other identity check in this app (see SphLockScreen). */
+const partnerName = computed(() => Object.values(USERS).find((u) => u.name !== props.userId)?.name || "");
+const filter = useFilterPref("us-filter-plans", "both");
+const filterOptions = computed(() => [
+  { value: "partner", label: "For " + partnerName.value },
+  { value: "me", label: "For me" },
+  { value: "both", label: "Both" },
+]);
+const filteredPlans = computed(() =>
+  Pl.sorted.value.filter((p) => {
+    if (filter.value === "me") return p.forWhom === props.userId;
+    if (filter.value === "partner") return p.forWhom === partnerName.value;
+    return (p.forWhom || "Both") === "Both";
+  }),
+);
 
 const placeOptions = computed(() => Pc.all.value.map((p) => ({ value: p.id, label: p.name })));
 const reminderOptions = computed(() => R.visible.value.map((r) => ({ value: r.id, label: r.title })));
@@ -61,13 +81,16 @@ const onSave = (payload) => {
 
 <template>
   <div>
-    <div class="flex items-center justify-between gap-3 mb-3">
+    <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
       <h3 class="font-display m-0 text-2xl font-semibold italic">Our plans</h3>
-      <button class="gbtn gbtn-primary" @click="openNew()"><sph-icon name="Plus" :size="16" /> New</button>
+      <div class="flex items-center gap-2 flex-wrap">
+        <sph-segmented-filter v-model="filter" :options="filterOptions" />
+        <button class="gbtn gbtn-primary" @click="openNew()"><sph-icon name="Plus" :size="16" /> New</button>
+      </div>
     </div>
-    <div v-if="Pl.sorted.value.length" class="grid gap-3">
+    <div v-if="filteredPlans.length" class="grid gap-3">
       <sph-plan-item
-        v-for="(p, i) in Pl.sorted.value"
+        v-for="(p, i) in filteredPlans"
         :key="p.id"
         :item="p"
         :linked-names="linkedNamesFor(p)"
@@ -77,7 +100,7 @@ const onSave = (payload) => {
         @remove="Pl.remove(p.id)"
       />
     </div>
-    <sph-empty-state v-else emoji="📝" message="No plans yet." hint="Ideas, dates, someday-maybes — start the list." />
+    <sph-empty-state v-else emoji="📝" message="Nothing here — try a different filter." />
 
     <sph-plan-form
       v-model="showForm"

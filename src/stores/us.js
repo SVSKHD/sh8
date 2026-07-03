@@ -5,6 +5,7 @@ import { collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, setDoc,
 import { defineStore } from "pinia";
 import { watchEffect } from "vue";
 import { db } from "../firebase";
+import { themeMode } from "../themeRegistry";
 import { LIST_SEEDS, SEED_THEMES, uid } from "./seed";
 
 const KEY = "us-app-v1";
@@ -20,7 +21,7 @@ function loadLocal() {
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
   } catch (e) {}
-  const base = Object.assign({ theme: "rose", themes: { ...SEED_THEMES } }, JSON.parse(JSON.stringify(LIST_SEEDS)));
+  const base = Object.assign({ theme: "rose", themes: { ...SEED_THEMES }, emails: {} }, JSON.parse(JSON.stringify(LIST_SEEDS)));
   const s = Object.assign(base, saved || {});
   // migrate old Me/You data to the two named users
   const NAME_MAP = { Me: "Hithesh", You: "Spoorthy" };
@@ -38,7 +39,7 @@ function loadLocal() {
 function createInitialState() {
   if (!db) return loadLocal();
   // Firestore mode: lists fill from snapshots (offline cache makes this instant)
-  return Object.assign({ theme: "rose", themes: { ...SEED_THEMES } }, Object.fromEntries(LISTS.map((l) => [l, []])));
+  return Object.assign({ theme: "rose", themes: { ...SEED_THEMES }, emails: {} }, Object.fromEntries(LISTS.map((l) => [l, []])));
 }
 
 /* one-time demo seed so every tab looks alive on a fresh project */
@@ -64,6 +65,7 @@ export const useUsStore = defineStore("us", {
       this._inited = true;
       watchEffect(() => {
         document.documentElement.dataset.theme = this.theme;
+        document.documentElement.dataset.mode = themeMode(this.theme);
       });
       if (db) this._bindFirestore();
       else
@@ -83,6 +85,9 @@ export const useUsStore = defineStore("us", {
       });
       onSnapshot(doc(db, sphCollection("settings"), "themes"), (snap) => {
         if (snap.exists()) this.themes = Object.assign({}, this.themes, snap.data());
+      });
+      onSnapshot(doc(db, sphCollection("settings"), "emails"), (snap) => {
+        if (snap.exists()) this.emails = Object.assign({}, this.emails, snap.data());
       });
       seedIfEmpty().catch(() => {});
     },
@@ -164,6 +169,14 @@ export const useUsStore = defineStore("us", {
       if (!this.themes) this.themes = {};
       this.themes[userName] = themeId;
       if (db) setDoc(doc(db, sphCollection("settings"), "themes"), { [userName]: themeId }, { merge: true }).catch(() => {});
+    },
+    /* each user's own Google account email, entered once — used to invite
+       them as an attendee when their partner sends a scheduled wish */
+    setEmail(email, userName) {
+      if (!userName) return;
+      if (!this.emails) this.emails = {};
+      this.emails[userName] = email;
+      if (db) setDoc(doc(db, sphCollection("settings"), "emails"), { [userName]: email }, { merge: true }).catch(() => {});
     },
   },
 });

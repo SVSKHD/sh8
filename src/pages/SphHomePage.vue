@@ -9,9 +9,11 @@ import SphMemoryCard from "../components/cards/SphMemoryCard.vue";
 import SphNoteCard from "../components/cards/SphNoteCard.vue";
 import SphPlaceCard from "../components/cards/SphPlaceCard.vue";
 import SphPlacesPanel from "../components/cards/SphPlacesPanel.vue";
+import SphPlansPanel from "../components/cards/SphPlansPanel.vue";
 import SphReminderList from "../components/cards/SphReminderList.vue";
 import SphTaskItem from "../components/cards/SphTaskItem.vue";
 import SphTimelineItem from "../components/cards/SphTimelineItem.vue";
+import SphWishesPanel from "../components/cards/SphWishesPanel.vue";
 import SphGreetingCard from "../components/SphGreetingCard.vue";
 import SphLockScreen from "../components/SphLockScreen.vue";
 import SphEmptyState from "../components/ui/SphEmptyState.vue";
@@ -24,6 +26,7 @@ import SphHeartRating from "../components/ui/SphHeartRating.vue";
 import SphThemeSwitcher from "../components/ui/SphThemeSwitcher.vue";
 import SphIcon from "../components/ui/SphIcon.vue";
 import { detailState } from "../composables/detail";
+import { scheduleWishDelivery, useWishes } from "../composables/useWishes";
 import { useUsStore } from "../stores/us";
 import { userByName } from "../users";
 
@@ -38,9 +41,11 @@ const TABS = [
   { id: "wishlist", icon: "MapPin", label: "Places to Visit" },
   { id: "visited", icon: "Map", label: "Places We Visited" },
   { id: "places", icon: "Compass", label: "Places" },
+  { id: "plans", icon: "ClipboardList", label: "Plans" },
   { id: "goals", icon: "Target", label: "Goals" },
   { id: "tasks", icon: "ListChecks", label: "Tasks" },
   { id: "reminders", icon: "BellRing", label: "Reminders" },
+  { id: "wishes", icon: "Mail", label: "Wishes" },
   { id: "notes", icon: "StickyNote", label: "Notes" },
   { id: "gratitudeForMe", icon: "Gift", label: "What You Did For Me" },
   { id: "gratitudeForYou", icon: "Sparkles", label: "What I Did For You" },
@@ -203,6 +208,31 @@ watch(
   },
 );
 
+/* scheduled wishes: show a delivered-but-unseen one the moment it's found,
+   and (re)start the precisely-timed notification scheduler for this user
+   whenever they're known (fresh unlock or restored session) */
+const wishes = useWishes(() => user.value && user.value.name);
+const popupWish = ref(null);
+const checkForWishPopup = () => {
+  if (!user.value) return;
+  wishes.checkDeliveries();
+  if (!popupWish.value) popupWish.value = wishes.deliveredUnseen.value[0] || null;
+};
+watch(
+  user,
+  (u) => {
+    if (u) {
+      scheduleWishDelivery(u.name);
+      checkForWishPopup();
+    }
+  },
+  { immediate: true },
+);
+const dismissWishPopup = () => {
+  if (popupWish.value) wishes.markSeen(popupWish.value.id);
+  popupWish.value = null;
+};
+
 /* gallery carousel */
 const photos = computed(() => state.gallery.filter((g) => g.src));
 const lbIndex = ref(-1);
@@ -247,13 +277,18 @@ const onTabKey = (e) => {
   active.value = ids[(i + (e.key === "ArrowRight" ? 1 : -1) + ids.length) % ids.length];
   e.preventDefault();
 };
+/* catches a wish that comes due while the app is open and actively being
+   used, beyond the one precisely-timed scheduler wakeup */
+let wishPollTimer = null;
 onMounted(() => {
   window.addEventListener("keydown", onLbKey);
   window.addEventListener("keydown", onTabKey);
+  wishPollTimer = setInterval(checkForWishPopup, 30000);
 });
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", onLbKey);
   window.removeEventListener("keydown", onTabKey);
+  clearInterval(wishPollTimer);
 });
 
 /* fixed-height panel: start each tab at the top */
@@ -400,6 +435,11 @@ const lock = () => {
           <sph-places-panel :user-id="user.name" />
         </section>
 
+        <section v-else-if="active === 'plans'" key="plans" class="tab-section">
+          <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">What's next for us</h2>
+          <sph-plans-panel :user-id="user.name" />
+        </section>
+
         <section v-else-if="active === 'goals'" key="goals" class="tab-section">
           <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">Things we’re building</h2>
           <div v-if="state.goals.length" class="grid gap-3">
@@ -434,6 +474,11 @@ const lock = () => {
         <section v-else-if="active === 'reminders'" key="reminders" class="tab-section">
           <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">So we never forget</h2>
           <sph-reminder-list :user-id="user.name" />
+        </section>
+
+        <section v-else-if="active === 'wishes'" key="wishes" class="tab-section">
+          <h2 class="font-display mt-0 mb-4 text-3xl font-semibold italic">Little scheduled surprises</h2>
+          <sph-wishes-panel :user-id="user.name" />
         </section>
 
         <section v-else-if="active === 'notes'" key="notes" class="tab-section">
@@ -484,6 +529,17 @@ const lock = () => {
           <p class="font-display m-0 mt-2 text-xl italic" style="color: var(--accent)">{{ user.pet }} ❤</p>
         </div>
       </div>
+
+      <!-- a scheduled wish has arrived -->
+      <sph-glass-modal :model-value="!!popupWish" title="A wish arrived 💌" @update:model-value="dismissWishPopup()">
+        <div v-if="popupWish">
+          <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--ink-3)">from {{ popupWish.from }}</p>
+          <p class="note-body mt-2">{{ popupWish.message }}</p>
+          <div class="flex justify-end mt-3">
+            <button type="button" class="gbtn gbtn-primary" @click="dismissWishPopup()">Close ♥</button>
+          </div>
+        </div>
+      </sph-glass-modal>
 
       <!-- floating add (hidden on chat — it has its own composer) -->
       <button v-if="formCfg" class="fab" :aria-label="formCfg.title" :title="formCfg.title" @click="openAdd()">

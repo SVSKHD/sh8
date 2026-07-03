@@ -1,5 +1,21 @@
 /* ============ Us — love themes & liquid glass ============ */
 
+/* glass surface tokens are identical across every theme sharing a mode —
+   declared once per mode instead of duplicated in every theme block below,
+   so new themes only need to declare their own hues. */
+html[data-mode="light"] {
+  --glass-fill: rgba(255, 255, 255, 0.42);
+  --glass-fill-strong: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+}
+html[data-mode="dark"] {
+  --glass-fill: rgba(255, 255, 255, 0.055);
+  --glass-fill-strong: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.22);
+}
+
 html[data-theme="rose"] {
   --bg-base: #fdf2f5;
   --blob-1: #ffd2e1;
@@ -12,10 +28,6 @@ html[data-theme="rose"] {
   --accent: #e0526f;
   --accent-soft: rgba(224, 82, 111, 0.14);
   --on-accent: #fff7f9;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(120, 50, 70, 0.1);
   --stripe: rgba(224, 82, 111, 0.07);
 }
@@ -32,10 +44,6 @@ html[data-theme="lavender"] {
   --accent: #8b5fd6;
   --accent-soft: rgba(139, 95, 214, 0.14);
   --on-accent: #f9f6ff;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(80, 55, 140, 0.1);
   --stripe: rgba(139, 95, 214, 0.07);
 }
@@ -52,10 +60,6 @@ html[data-theme="sunset"] {
   --accent: #e8703f;
   --accent-soft: rgba(232, 112, 63, 0.14);
   --on-accent: #fff8f3;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(150, 75, 35, 0.1);
   --stripe: rgba(232, 112, 63, 0.07);
 }
@@ -72,10 +76,6 @@ html[data-theme="ocean"] {
   --accent: #1f8fa8;
   --accent-soft: rgba(31, 143, 168, 0.14);
   --on-accent: #f2fbfd;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(30, 95, 120, 0.1);
   --stripe: rgba(31, 143, 168, 0.07);
 }
@@ -92,10 +92,6 @@ html[data-theme="meadow"] {
   --accent: #4f9c63;
   --accent-soft: rgba(79, 156, 99, 0.14);
   --on-accent: #f3fbf5;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(50, 110, 60, 0.1);
   --stripe: rgba(79, 156, 99, 0.07);
 }
@@ -112,10 +108,6 @@ html[data-theme="mocha"] {
   --accent: #a4663f;
   --accent-soft: rgba(164, 102, 63, 0.14);
   --on-accent: #fdf7f2;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(120, 75, 45, 0.1);
   --stripe: rgba(164, 102, 63, 0.07);
 }
@@ -132,10 +124,6 @@ html[data-theme="cherry"] {
   --accent: #d23950;
   --accent-soft: rgba(210, 57, 80, 0.14);
   --on-accent: #fff5f6;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(160, 50, 70, 0.1);
   --stripe: rgba(210, 57, 80, 0.07);
 }
@@ -152,12 +140,40 @@ html[data-theme="golden"] {
   --accent: #c2861c;
   --accent-soft: rgba(194, 134, 28, 0.14);
   --on-accent: #fffaf0;
-  --glass-fill: rgba(255, 255, 255, 0.42);
-  --glass-fill-strong: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
   --glass-shadow: rgba(150, 105, 30, 0.1);
   --stripe: rgba(194, 134, 28, 0.07);
+}
+
+html[data-theme="periwinkle"] {
+  --bg-base: #f1f3fc;
+  --blob-1: #cdd6f7;
+  --blob-2: #e0d6fb;
+  --blob-3: #d2eaf7;
+  --blob-4: #f0e6fb;
+  --ink: #2f3a66;
+  --ink-2: rgba(47, 58, 102, 0.68);
+  --ink-3: rgba(47, 58, 102, 0.45);
+  --accent: #5b74d1;
+  --accent-soft: rgba(91, 116, 209, 0.14);
+  --on-accent: #f7f8ff;
+  --glass-shadow: rgba(50, 65, 140, 0.1);
+  --stripe: rgba(91, 116, 209, 0.07);
+}
+
+html[data-theme="seafoam"] {
+  --bg-base: #eef9f5;
+  --blob-1: #b8ecda;
+  --blob-2: #c6f2e6;
+  --blob-3: #cdeef2;
+  --blob-4: #e3f7ec;
+  --ink: #204a3e;
+  --ink-2: rgba(32, 74, 62, 0.68);
+  --ink-3: rgba(32, 74, 62, 0.45);
+  --accent: #2ea88c;
+  --accent-soft: rgba(46, 168, 140, 0.14);
+  --on-accent: #f2fbf8;
+  --glass-shadow: rgba(20, 110, 90, 0.1);
+  --stripe: rgba(46, 168, 140, 0.07);
 }
 
 html[data-theme="midnight"] {
@@ -172,10 +188,6 @@ html[data-theme="midnight"] {
   --accent: #e3a4b2;
   --accent-soft: rgba(227, 164, 178, 0.16);
   --on-accent: #321b25;
-  --glass-fill: rgba(255, 255, 255, 0.055);
-  --glass-fill-strong: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.22);
   --glass-shadow: rgba(0, 0, 0, 0.35);
   --stripe: rgba(227, 164, 178, 0.08);
 }
@@ -192,12 +204,40 @@ html[data-theme="noir"] {
   --accent: #c9a0dc;
   --accent-soft: rgba(201, 160, 220, 0.16);
   --on-accent: #2c1d38;
-  --glass-fill: rgba(255, 255, 255, 0.055);
-  --glass-fill-strong: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.22);
   --glass-shadow: rgba(0, 0, 0, 0.35);
   --stripe: rgba(201, 160, 220, 0.08);
+}
+
+html[data-theme="eclipse"] {
+  --bg-base: #0f1626;
+  --blob-1: #1c2a4a;
+  --blob-2: #24304f;
+  --blob-3: #16233d;
+  --blob-4: #2a2f4f;
+  --ink: #e8eef8;
+  --ink-2: rgba(232, 238, 248, 0.68);
+  --ink-3: rgba(232, 238, 248, 0.42);
+  --accent: #7fb2e3;
+  --accent-soft: rgba(127, 178, 227, 0.16);
+  --on-accent: #12233a;
+  --glass-shadow: rgba(0, 0, 0, 0.35);
+  --stripe: rgba(127, 178, 227, 0.08);
+}
+
+html[data-theme="wine"] {
+  --bg-base: #241017;
+  --blob-1: #40202a;
+  --blob-2: #522733;
+  --blob-3: #33161e;
+  --blob-4: #4a2430;
+  --ink: #f5e6e9;
+  --ink-2: rgba(245, 230, 233, 0.68);
+  --ink-3: rgba(245, 230, 233, 0.42);
+  --accent: #d68a63;
+  --accent-soft: rgba(214, 138, 99, 0.16);
+  --on-accent: #3a1e14;
+  --glass-shadow: rgba(0, 0, 0, 0.35);
+  --stripe: rgba(214, 138, 99, 0.08);
 }
 
 /* ============ base ============ */
@@ -429,8 +469,7 @@ select.ginput {
 .ginput {
   color-scheme: light;
 }
-html[data-theme="midnight"] .ginput,
-html[data-theme="noir"] .ginput {
+html[data-mode="dark"] .ginput {
   color-scheme: dark;
 }
 input[type="date"].ginput::-webkit-calendar-picker-indicator,
@@ -447,10 +486,8 @@ input[type="datetime-local"].ginput::-webkit-calendar-picker-indicator:hover {
   background: var(--accent-soft);
 }
 
-html[data-theme="midnight"] .ginput,
-html[data-theme="noir"] .ginput,
-html[data-theme="midnight"] select.ginput option,
-html[data-theme="noir"] select.ginput option {
+html[data-mode="dark"] .ginput,
+html[data-mode="dark"] select.ginput option {
   color: var(--ink);
 }
 html[data-theme="midnight"] select.ginput option {
@@ -458,6 +495,12 @@ html[data-theme="midnight"] select.ginput option {
 }
 html[data-theme="noir"] select.ginput option {
   background: #261d30;
+}
+html[data-theme="eclipse"] select.ginput option {
+  background: #1a2740;
+}
+html[data-theme="wine"] select.ginput option {
+  background: #3a1d26;
 }
 
 .glabel {
@@ -509,8 +552,7 @@ html[data-theme="noir"] select.ginput option {
 .tab-btn.active {
   color: var(--accent);
 }
-html[data-theme="midnight"] .tab-btn.active,
-html[data-theme="noir"] .tab-btn.active {
+html[data-mode="dark"] .tab-btn.active {
   color: var(--ink);
 }
 
@@ -655,8 +697,7 @@ html[data-theme="noir"] .tab-btn.active {
   color: var(--accent);
   border: 1px solid transparent;
 }
-html[data-theme="midnight"] .chip,
-html[data-theme="noir"] .chip {
+html[data-mode="dark"] .chip {
   color: var(--ink);
   border-color: var(--glass-border);
 }
@@ -995,6 +1036,9 @@ html[data-theme="noir"] .chip {
   top: calc(100% + 0.6rem);
   z-index: 55;
   width: min(19rem, calc(100vw - 2rem));
+  max-height: min(28rem, calc(100vh - 6rem));
+  overflow-y: auto;
+  scrollbar-width: thin;
   border-radius: 1.2rem;
   padding: 0.9rem;
   animation: modal-pop 0.25s cubic-bezier(0.3, 1.3, 0.4, 1) both;

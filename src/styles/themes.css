@@ -422,6 +422,31 @@ select.ginput {
   cursor: pointer;
 }
 
+/* native date/time pickers: color-scheme flips the browser's own popup
+   chrome (and calendar-picker icon) to match light vs. dark themes —
+   there's no CSS hook into the popup's internal day-cell colors, so this
+   is the correct, dependency-free ceiling for theming a native control */
+.ginput {
+  color-scheme: light;
+}
+html[data-theme="midnight"] .ginput,
+html[data-theme="noir"] .ginput {
+  color-scheme: dark;
+}
+input[type="date"].ginput::-webkit-calendar-picker-indicator,
+input[type="time"].ginput::-webkit-calendar-picker-indicator,
+input[type="datetime-local"].ginput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 0.3rem;
+  padding: 0.15rem;
+  transition: background 0.2s ease;
+}
+input[type="date"].ginput::-webkit-calendar-picker-indicator:hover,
+input[type="time"].ginput::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"].ginput::-webkit-calendar-picker-indicator:hover {
+  background: var(--accent-soft);
+}
+
 html[data-theme="midnight"] .ginput,
 html[data-theme="noir"] .ginput,
 html[data-theme="midnight"] select.ginput option,

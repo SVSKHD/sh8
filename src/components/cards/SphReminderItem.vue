@@ -53,6 +53,7 @@ const countLabel = computed(() => {
           <span class="chip">{{ info.interval > 0 ? "every " + info.interval + " days" : "once" }}</span>
           <span class="chip chip-outline">{{ isCommon ? "Shared" : "Yours" }}</span>
           <span v-if="!enabled" class="chip chip-outline">Paused</span>
+          <span v-if="item.googleEventId" class="chip chip-outline"><sph-icon name="Calendar" :size="11" /> Synced</span>
         </div>
         <p class="m-0 mt-1 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">
           {{ fmtLocal(info.next) }}

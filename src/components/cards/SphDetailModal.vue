@@ -19,6 +19,7 @@ const title = computed(
       memory: "Memory",
       wishlist: "Place to visit",
       visited: "Place we visited",
+      place: "Place",
       note: "Note",
       gratitude: "Sweet note",
     })[d.kind] || "",
@@ -36,6 +37,8 @@ const list = computed(() => {
       return state.wishlist;
     case "visited":
       return state.visited;
+    case "place":
+      return state.places;
     case "note":
       return state.notes;
     case "gratitude":
@@ -116,6 +119,30 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
             </div>
             <div class="mt-2"><sph-heart-rating :model-value="d.item.rating" readonly :size="20" /></div>
             <p v-if="d.item.story" class="detail-body mt-3">{{ d.item.story }}</p>
+          </template>
+
+          <template v-else-if="d.kind === 'place'">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="font-display m-0 text-3xl font-semibold leading-tight">{{ d.item.name }}</h2>
+              <span v-if="d.item.visited" class="chip">visited</span>
+            </div>
+            <p v-if="d.item.addedBy" class="m-0 mt-1 text-xs" style="color: var(--ink-3)">added by {{ d.item.addedBy }}</p>
+            <p
+              v-if="d.item.visited && d.item.visitedDate"
+              class="m-0 mt-1 text-xs font-bold uppercase tracking-widest"
+              style="color: var(--accent)"
+            >
+              {{ fmt(d.item.visitedDate) }}
+            </p>
+            <img
+              v-if="d.item.image"
+              :src="d.item.image"
+              :alt="d.item.name"
+              class="mt-3 block w-full"
+              style="border-radius: 1rem; max-height: 14rem; object-fit: cover"
+            />
+            <sph-photo-placeholder v-else label="no photo yet" :height="150" class="mt-3" />
+            <p v-if="d.item.note" class="detail-body mt-3">{{ d.item.note }}</p>
           </template>
 
           <template v-else-if="d.kind === 'note'">

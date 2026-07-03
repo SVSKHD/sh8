@@ -5,6 +5,7 @@
 import { ref } from "vue";
 import { useReminders } from "../../composables/useReminders";
 import SphEmptyState from "../ui/SphEmptyState.vue";
+import SphGoogleCalendarButton from "../ui/SphGoogleCalendarButton.vue";
 import SphIcon from "../ui/SphIcon.vue";
 import SphReminderForm from "./SphReminderForm.vue";
 import SphReminderItem from "./SphReminderItem.vue";
@@ -33,9 +34,12 @@ const onSave = (payload) => {
 <template>
   <div>
     <!-- your reminders -->
-    <div class="flex items-center justify-between gap-3 mb-3">
+    <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
       <h3 class="font-display m-0 text-2xl font-semibold italic">Your reminders</h3>
-      <button class="gbtn gbtn-primary" @click="openNew()"><sph-icon name="Plus" :size="16" /> New</button>
+      <div class="flex items-center gap-2">
+        <sph-google-calendar-button />
+        <button class="gbtn gbtn-primary" @click="openNew()"><sph-icon name="Plus" :size="16" /> New</button>
+      </div>
     </div>
     <div v-if="R.mine.value.length" class="grid gap-3">
       <sph-reminder-item

@@ -101,6 +101,7 @@ export const useUsStore = defineStore("us", {
       const it = Object.assign({ id: uid(), createdAt: Date.now() }, item);
       this[list].unshift(it);
       this._write(list, it);
+      return it;
     },
     addMessage(from, text) {
       const m = { id: uid(), from, text, ts: new Date().toISOString() };

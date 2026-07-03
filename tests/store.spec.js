@@ -12,6 +12,7 @@ describe("sph collection naming", () => {
       "gallery",
       "wishlist",
       "visited",
+      "places",
       "goals",
       "tasks",
       "reminders",
@@ -40,6 +41,7 @@ describe("useUsStore (localStorage fallback)", () => {
     expect(store.memories.length).toBeGreaterThan(0);
     expect(store.wishlist.length).toBeGreaterThan(0);
     expect(store.visited.length).toBeGreaterThan(0);
+    expect(store.places.length).toBeGreaterThan(0);
     expect(store.goals.length).toBeGreaterThan(0);
     expect(store.tasks.length).toBeGreaterThan(0);
     expect(store.reminders.length).toBeGreaterThan(0);
@@ -58,6 +60,22 @@ describe("useUsStore (localStorage fallback)", () => {
     expect(store.notes[0].title).toBe("t");
     expect(store.notes[0].id).toBeTruthy();
     expect(store.notes[0].createdAt).toBeTypeOf("number");
+  });
+
+  it("addItem returns the created item", () => {
+    const store = useUsStore();
+    const created = store.addItem("notes", { title: "t", body: "b", date: "2026-06-11" });
+    expect(created.title).toBe("t");
+    expect(created.id).toBe(store.notes[0].id);
+  });
+
+  it("updateItem merges a patch and returns the updated item", () => {
+    const store = useUsStore();
+    const id = store.notes[0].id;
+    const updated = store.updateItem("notes", id, { title: "changed" });
+    expect(updated.title).toBe("changed");
+    expect(store.notes[0].title).toBe("changed");
+    expect(store.updateItem("notes", "nope", { title: "x" })).toBeNull();
   });
 
   it("removeItem deletes by id", () => {

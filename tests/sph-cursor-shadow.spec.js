@@ -5,6 +5,14 @@ import SphCursorShadow from "../src/components/ui/SphCursorShadow.vue";
 const move = (x, y) => window.dispatchEvent(new MouseEvent("pointermove", { clientX: x, clientY: y }));
 const mm = (matches) => () => ({ matches, addListener() {}, removeListener() {} });
 
+/* jsdom doesn't reliably support the TouchEvent constructor; a plain Event
+   with a manually-attached `touches` array is all the component reads */
+const touch = (type, x, y) => {
+  const e = new Event(type, { bubbles: true, cancelable: true });
+  e.touches = [{ clientX: x, clientY: y }];
+  window.dispatchEvent(e);
+};
+
 describe("SphCursorShadow", () => {
   afterEach(() => {
     window.matchMedia = mm(true); // restore the setup default (reduced motion)
@@ -65,7 +73,53 @@ describe("SphCursorShadow", () => {
     const w = mount(SphCursorShadow);
     w.unmount();
     expect(spy).toHaveBeenCalledWith("pointermove", expect.any(Function));
+    expect(spy).toHaveBeenCalledWith("touchstart", expect.any(Function));
     expect(spy).toHaveBeenCalledWith("touchmove", expect.any(Function));
     spy.mockRestore();
+  });
+
+  it("spawns a heart cluster and a themed ripple immediately on touchstart", async () => {
+    window.matchMedia = mm(false);
+    const w = mount(SphCursorShadow, { props: { heartColor: "#1f8fa8", rippleColor: "#1f8fa8", clusterSize: 3 } });
+    touch("touchstart", 60, 60);
+    await w.vm.$nextTick();
+    expect(w.findAll(".cl-heart").length).toBeGreaterThanOrEqual(3);
+    const ripples = w.findAll(".cl-ripple");
+    expect(ripples.length).toBeGreaterThanOrEqual(1);
+    // jsdom normalizes the hex to rgb() in inline styles
+    expect(ripples[0].attributes("style")).toContain("rgb(31, 143, 168)");
+  });
+
+  it("keeps spawning ripples as a touch drags past the distance threshold", async () => {
+    window.matchMedia = mm(false);
+    const w = mount(SphCursorShadow, { props: { spawnDistance: 20 } });
+    touch("touchstart", 0, 0);
+    await w.vm.$nextTick();
+    const afterStart = w.findAll(".cl-ripple").length;
+    touch("touchmove", 200, 200);
+    await w.vm.$nextTick();
+    expect(w.findAll(".cl-ripple").length).toBeGreaterThan(afterStart);
+  });
+
+  it("does not spawn hearts or ripples on touchstart under reduced motion", async () => {
+    window.matchMedia = mm(true);
+    const w = mount(SphCursorShadow);
+    touch("touchstart", 10, 10);
+    await w.vm.$nextTick();
+    expect(w.findAll(".cl-heart").length).toBe(0);
+    expect(w.findAll(".cl-ripple").length).toBe(0);
+  });
+
+  it("caps live ripples at maxRipples", async () => {
+    window.matchMedia = mm(false);
+    const w = mount(SphCursorShadow, { props: { maxRipples: 4, spawnDistance: 10 } });
+    touch("touchstart", 0, 0);
+    let x = 0;
+    for (let i = 0; i < 20; i++) {
+      x += 30;
+      touch("touchmove", x, 0);
+    }
+    await w.vm.$nextTick();
+    expect(w.findAll(".cl-ripple").length).toBeLessThanOrEqual(4);
   });
 });

@@ -1,22 +1,28 @@
 <script setup>
 /* Glowing cursor with a moving love tail: a soft glow rides the pointer while
    moving it spawns little clusters of hearts that drift up, shrink, rotate and
-   fade. Fully theme-driven — every heart is colored from the `heartColor` prop
-   (shaded slightly per particle for depth), never a hardcoded pink. A multiply
-   blend keeps hearts/glow visible on bright backgrounds and never black. */
+   fade. On touch devices, movement also spawns a soft expanding ripple ring at
+   the touch point. Fully theme-driven — every heart/ripple is colored from
+   theme props (hearts shaded slightly per particle for depth), never a
+   hardcoded pink. A multiply blend keeps everything visible on bright
+   backgrounds and never black. Single RAF loop drives both effects — no
+   duplicated animation machinery. */
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { shade } from "../../utils/colors";
 
 const props = defineProps({
   heartColor: { type: String, default: "#e0526f" },
   glowColor: { type: String, default: "#e0526f" },
+  rippleColor: { type: String, default: "#e0526f" },
   /* base heart size in px */
   size: { type: Number, default: 18 },
   /* hearts spawned per cluster */
   clusterSize: { type: Number, default: 3 },
   /* hard cap on live particles — oldest are dropped past this */
   maxParticles: { type: Number, default: 45 },
-  /* px the pointer must travel before a new cluster spawns (0 = idle, none) */
+  /* hard cap on live ripples — oldest are dropped past this */
+  maxRipples: { type: Number, default: 8 },
+  /* px the pointer must travel before a new cluster/ripple spawns (0 = idle, none) */
   spawnDistance: { type: Number, default: 22 },
 });
 
@@ -28,8 +34,10 @@ const reduceMotion =
 
 const glow = ref(null);
 const particles = ref([]);
+const ripples = ref([]);
 let raf = 0;
 let seq = 0;
+let rippleSeq = 0;
 let last = 0;
 
 const gTarget = { x: -100, y: -100 };
@@ -62,10 +70,17 @@ function spawnCluster(x, y) {
   if (over > 0) particles.value.splice(0, over);
 }
 
-function onMove(x, y) {
+/* a single soft expanding ring at (x, y) — the touch-only love ripple */
+function spawnRipple(x, y) {
+  ripples.value.push({ id: rippleSeq++, x, y, life: 0, maxLife: 650, scale: 0.3, opacity: 0.55 });
+  const over = ripples.value.length - props.maxRipples;
+  if (over > 0) ripples.value.splice(0, over);
+}
+
+function onMove(x, y, { withRipple = false } = {}) {
   gTarget.x = x;
   gTarget.y = y;
-  if (reduceMotion) return; // keep the glow, skip the motion of hearts
+  if (reduceMotion) return; // keep the glow, skip the motion of hearts/ripples
   if (lastSpawn.x == null) {
     lastSpawn.x = x;
     lastSpawn.y = y;
@@ -76,14 +91,26 @@ function onMove(x, y) {
   /* farther / faster travel between events → more clusters */
   const clusters = Math.min(4, Math.floor(dist / props.spawnDistance));
   for (let c = 0; c < clusters; c++) spawnCluster(x, y);
+  if (withRipple) spawnRipple(x, y);
   lastSpawn.x = x;
   lastSpawn.y = y;
 }
 
 const onPointer = (e) => onMove(e.clientX, e.clientY);
-const onTouch = (e) => {
+const onTouchMove = (e) => {
   const t = e.touches && e.touches[0];
-  if (t) onMove(t.clientX, t.clientY);
+  if (t) onMove(t.clientX, t.clientY, { withRipple: true });
+};
+const onTouchStart = (e) => {
+  const t = e.touches && e.touches[0];
+  if (!t) return;
+  gTarget.x = t.clientX;
+  gTarget.y = t.clientY;
+  lastSpawn.x = t.clientX;
+  lastSpawn.y = t.clientY;
+  if (reduceMotion) return;
+  spawnCluster(t.clientX, t.clientY);
+  spawnRipple(t.clientX, t.clientY);
 };
 
 function tick(now) {
@@ -113,17 +140,31 @@ function tick(now) {
     }
     particles.value = next;
   }
+
+  if (ripples.value.length) {
+    const next = [];
+    for (const r of ripples.value) {
+      const life = r.life + dt;
+      if (life >= r.maxLife) continue;
+      const t = life / r.maxLife;
+      next.push({ ...r, life, scale: 0.3 + t * 2.2, opacity: 0.55 * (1 - t) });
+    }
+    ripples.value = next;
+  }
+
   raf = requestAnimationFrame(tick);
 }
 
 onMounted(() => {
   window.addEventListener("pointermove", onPointer, { passive: true });
-  window.addEventListener("touchmove", onTouch, { passive: true });
+  window.addEventListener("touchstart", onTouchStart, { passive: true });
+  window.addEventListener("touchmove", onTouchMove, { passive: true });
   raf = requestAnimationFrame(tick);
 });
 onBeforeUnmount(() => {
   window.removeEventListener("pointermove", onPointer);
-  window.removeEventListener("touchmove", onTouch);
+  window.removeEventListener("touchstart", onTouchStart);
+  window.removeEventListener("touchmove", onTouchMove);
   cancelAnimationFrame(raf);
 });
 </script>
@@ -138,6 +179,17 @@ onBeforeUnmount(() => {
         width: size * 2 + 'px',
         height: size * 2 + 'px',
         background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+      }"
+    ></div>
+    <!-- touch-only expanding love ripples -->
+    <div
+      v-for="r in ripples"
+      :key="'r' + r.id"
+      class="cl-ripple"
+      :style="{
+        transform: `translate3d(${r.x}px, ${r.y}px, 0) translate(-50%, -50%) scale(${r.scale})`,
+        opacity: r.opacity,
+        borderColor: rippleColor,
       }"
     ></div>
     <!-- drifting hearts -->
@@ -180,6 +232,16 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 0;
   left: 0;
+  will-change: transform, opacity;
+}
+.cl-ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 2px solid;
   will-change: transform, opacity;
 }
 </style>

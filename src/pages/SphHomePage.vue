@@ -174,7 +174,11 @@ const user = ref(restored);
 const unlocked = ref(!!restored);
 if (restored && state.themes && state.themes[restored.name]) state.theme = state.themes[restored.name];
 const welcome = ref(false);
-const active = ref("timeline");
+/* last-active tab persists across full app restarts (iOS PWA cold start
+   included) via localStorage — falls back to the home tab if the stored
+   value is missing or no longer a valid tab id */
+const active = useFilterPref("us-last-tab", "timeline");
+if (!TABS.some((t) => t.id === active.value)) active.value = "timeline";
 const showAdd = ref(false);
 const form = reactive({});
 

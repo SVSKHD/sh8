@@ -100,6 +100,6 @@ onMounted(() => {
       <sph-empty-state v-else emoji="✉️" message="Nothing scheduled yet." hint="Write something for later." />
     </template>
 
-    <sph-wish-form v-model="showForm" :wish="editing" :to-name="partnerName" @save="onSave" />
+    <sph-wish-form v-model="showForm" :wish="editing" :to-name="partnerName" :user-id="userId" @save="onSave" />
   </div>
 </template>

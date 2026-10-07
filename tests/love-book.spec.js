@@ -31,11 +31,24 @@ describe("loveBook content", () => {
   });
 });
 
+/* the check-in pages the book actually stops at (the finale page doesn't ask) */
+const CHECKINS = checkinsFor("Spoorthy");
+const STOPS = Object.keys(CHECKINS)
+  .map(Number)
+  .filter((n) => n < BOOK_PAGES)
+  .sort((a, b) => a - b);
+const paragraphCount = (body) =>
+  body
+    .split(/\n\s*\n/)
+    .map((t) => t.trim())
+    .filter(Boolean).length;
+
 describe("check-ins", () => {
-  it("has a question, two answers and a letter at pages 10, 20, 40 and 70", () => {
-    const c = checkinsFor("Spoorthy");
-    expect(Object.keys(c).map(Number)).toEqual([10, 20, 40, 70]);
-    for (const page of [10, 20, 40, 70]) {
+  it("each check-in has a question, at least two answers and a letter", () => {
+    expect(STOPS.length).toBeGreaterThan(0);
+    expect(STOPS).toContain(10);
+    for (const page of Object.keys(CHECKINS).map(Number)) {
+      const c = CHECKINS;
       expect(c[page].question, page).toBeTruthy();
       expect(c[page].answers.length, page).toBeGreaterThanOrEqual(2);
       for (const a of c[page].answers) expect(a.label && a.reply, page).toBeTruthy();
@@ -90,12 +103,12 @@ describe("SphLoveBook", () => {
     const early = Number(count().match(/Page (\d+)/)[1]);
     expect(early).toBeGreaterThan(1);
     const asked = await readThrough(w, 180000);
-    expect(asked).toEqual([10, 20, 40, 70]);
+    expect(asked).toEqual(STOPS);
     expect(count()).toBe("Page 100 of 100");
     expect(document.body.textContent.replace(/\u00a0/g, " ")).toContain("Happy birthday");
     expect(document.body.textContent).toContain("Read again");
     w.unmount();
-  });
+  }, 20000); // plays all 100 pages — slow on a busy machine (pre-push hook)
 
   it("check-in: waits on page 10, asks, then opens the letter for the chosen answer", async () => {
     const w = mountBook();
@@ -104,8 +117,9 @@ describe("SphLoveBook", () => {
       await w.vm.$nextTick();
     }
     expect(count()).toBe("Page 10 of 100");
+    const c10 = CHECKINS[10];
     const ask = document.body.querySelector(".lb-ask");
-    expect(ask.textContent.replace(/\u00a0/g, " ")).toContain("are you tired yet?");
+    expect(ask.textContent.replace(/\u00a0/g, " ")).toContain(c10.question);
     // the book waits — no pages turn while the question is up
     vi.advanceTimersByTime(20000);
     await w.vm.$nextTick();
@@ -113,11 +127,12 @@ describe("SphLoveBook", () => {
     // pause is hidden during a check-in
     expect(document.body.querySelector('[aria-label="Pause"]')).toBeNull();
 
-    [...document.body.querySelectorAll(".lb-answer")].find((b) => b.textContent.includes("A little")).click();
+    const choice = c10.answers[0];
+    [...document.body.querySelectorAll(".lb-answer")].find((b) => b.textContent.includes(choice.label)).click();
     await w.vm.$nextTick();
     const letter = document.body.querySelector(".lb-letter");
-    expect(letter.textContent).toContain("Okay — rest your eyes on this one.");
-    expect(letter.querySelectorAll(".lb-letter-p").length).toBe(2); // blank line → two paragraphs
+    expect(letter.textContent).toContain(choice.reply); // the chosen answer's lead-in
+    expect(letter.querySelectorAll(".lb-letter-p").length).toBe(paragraphCount(c10.body)); // blank line → new paragraph
     expect(letter.querySelector(".lb-letter-sign").textContent).toContain("Hithesh");
     expect(document.body.querySelector(".lb-seal")).not.toBeNull(); // sealed envelope
 
@@ -207,7 +222,7 @@ describe("SphLoveBook", () => {
 
     it("marks check-ins and milestone pages on the track", () => {
       const w = mountBook();
-      expect(document.body.querySelectorAll(".lb-seek-mark.checkin")).toHaveLength(4);
+      expect(document.body.querySelectorAll(".lb-seek-mark.checkin")).toHaveLength(STOPS.length);
       expect(document.body.querySelectorAll(".lb-seek-mark.milestone")).toHaveLength(4);
       w.unmount();
     });

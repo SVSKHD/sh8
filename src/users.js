@@ -1,7 +1,7 @@
 /* two hearts, two codes — birthday is month (1-12), day, year */
 export const USERS = {
   2607: { name: "Hithesh", pet: "cuore mio", birthday: { month: 7, day: 26, year: 1995 } },
-  1710: { name: "Spoorthy", pet: "cuore mia", birthday: { month: 10, day: 7, year: 1999 } },
+  1710: { name: "Spoorthy", pet: "cuore mia", birthday: { month: 10, day: 17, year: 1999 } },
 };
 
 export const userByName = (n) => Object.values(USERS).find((u) => u.name === n) || null;

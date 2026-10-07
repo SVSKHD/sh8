@@ -395,7 +395,11 @@ const onSeekChange = (n) => {
 /* little markers on the track: check-ins (hearts) and milestone pages */
 const marks = computed(() =>
   [
-    ...Object.keys(checkins.value).map((n) => ({ kind: "checkin", page: Number(n) })),
+    // only check-ins the book actually stops at (the finale page doesn't ask)
+    ...Object.keys(checkins.value)
+      .map(Number)
+      .filter((n) => n < BOOK_PAGES)
+      .map((n) => ({ kind: "checkin", page: n })),
     ...pages.value.map((p, i) => (p.kind === "milestone" ? { kind: "milestone", page: i + 1 } : null)).filter(Boolean),
   ].map((m) => ({ ...m, pct: ((m.page - 1) / LAST) * 100 })),
 );

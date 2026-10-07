@@ -17,7 +17,9 @@ describe("fmtDate", () => {
   });
 });
 
-const iso = (d) => d.toISOString().slice(0, 10);
+/* local calendar date — getNextDueDate returns local midnight, which
+   toISOString() (UTC) would shift to the day before east of Greenwich */
+const iso = (d) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
 
 describe("getNextDueDate", () => {
   const from = new Date("2026-06-11T09:00:00");

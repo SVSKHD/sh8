@@ -54,12 +54,36 @@ const press = (k) => {
   }
 };
 
+// Pad key ids currently held down on a physical keyboard, so they show the
+// same pressed state as a tap.
+const held = ref(new Set());
+const keyIdFor = (key) => (key >= "0" && key <= "9" ? "k" + key : key === "Backspace" ? "back" : null);
+
 const onKey = (e) => {
-  if (e.key >= "0" && e.key <= "9") press({ t: "num", v: e.key });
-  else if (e.key === "Backspace") press({ t: "back" });
+  const id = keyIdFor(e.key);
+  if (!id) return;
+  held.value = new Set(held.value).add(id);
+  if (id === "back") press({ t: "back" });
+  else press({ t: "num", v: e.key });
 };
-onMounted(() => window.addEventListener("keydown", onKey));
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+const onKeyUp = (e) => {
+  const id = keyIdFor(e.key);
+  if (!id || !held.value.has(id)) return;
+  const next = new Set(held.value);
+  next.delete(id);
+  held.value = next;
+};
+const clearHeld = () => (held.value = new Set());
+onMounted(() => {
+  window.addEventListener("keydown", onKey);
+  window.addEventListener("keyup", onKeyUp);
+  window.addEventListener("blur", clearHeld);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKey);
+  window.removeEventListener("keyup", onKeyUp);
+  window.removeEventListener("blur", clearHeld);
+});
 </script>
 
 <template>
@@ -80,7 +104,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
           :key="k.id"
           type="button"
           class="pad-key"
-          :class="{ blank: k.t === 'blank' }"
+          :class="{ blank: k.t === 'blank', pressed: held.has(k.id) }"
           :aria-label="k.t === 'back' ? 'Delete digit' : k.v"
           @click="press(k)"
         >

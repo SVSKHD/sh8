@@ -1,11 +1,12 @@
 <script setup>
 import { burstHearts } from "../../composables/burstHearts";
 import { fmtDate } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassCard from "../ui/SphGlassCard.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({ item: { type: Object, required: true } });
-const emit = defineEmits(["bump", "remove"]);
+const emit = defineEmits(["bump", "edit", "remove"]);
 
 const bump = (d, ev) => {
   const before = props.item.progress;
@@ -22,10 +23,16 @@ const bump = (d, ev) => {
       <div>
         <h3 class="font-display m-0 text-2xl font-semibold leading-tight">{{ item.title }}</h3>
         <p v-if="item.targetDate" class="m-0 mt-0.5 text-xs" style="color: var(--ink-3)">by {{ fmtDate(item.targetDate) }}</p>
+        <sph-byline :item="item" class="mt-1" />
       </div>
-      <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete goal" @click="$emit('remove')">
-        <sph-icon name="Trash2" :size="15" />
-      </button>
+      <div class="flex items-center flex-shrink-0">
+        <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Edit goal" @click="$emit('edit')">
+          <sph-icon name="Pencil" :size="14" />
+        </button>
+        <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete goal" @click="$emit('remove')">
+          <sph-icon name="Trash2" :size="15" />
+        </button>
+      </div>
     </div>
     <div class="flex items-center gap-3 mt-3.5">
       <div class="progress-track flex-1"><div class="progress-fill" :style="{ width: item.progress + '%' }"></div></div>

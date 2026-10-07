@@ -16,42 +16,80 @@ npm run format   # prettier --write across the repo
 
 ## Component library — `/ui`
 
-Every building block is a reusable, prop-driven component named with the **`Sph`** prefix (`SphGlassCard`, `SphGlassModal`, `SphGlassTabBar`, `SphHeartRating`, `SphTaskItem`, `SphReminderCard`, `SphChatBox`, `SphLockScreen`, …). Visit **`/ui`** for a live component gallery: foundations (buttons, chips, inputs, tab bar), every content card with sample data, the chat box, modal, greeting card, and a live lock-screen preview — all reskinnable from the theme switcher in the gallery header.
+Every building block is a reusable, prop-driven component named with the **`Sph`** prefix (`SphGlassCard`, `SphGlassModal`, `SphGlassTabBar`, `SphHeartRating`, `SphTaskItem`, `SphReminderCard`, `SphChatBox`, `SphLockScreen`, …). Visit **`/ui`** for a live component gallery: foundations (buttons, chips, inputs, tab bar), every content card with sample data, the chat box, modal, greeting card, sidebar drawers, tooltips, and the complete registered Lucide icon library — all reskinnable from the theme switcher in the gallery header.
+
+**UI gallery convention:** whenever a reusable UI component, control, or icon is added, add an interactive example for it to `src/pages/SphUiGalleryPage.vue` in the same change. Keep examples isolated with local mock state so the gallery never mutates real user data.
 
 ## Quality tooling
 
-- **Tests** — Vitest + Vue Test Utils (jsdom) in `tests/`: store actions and persistence, `sph` collection naming, date/relative-time utilities, and component behavior (lock-screen codes, chat alignment, reminder math, modal, tab bar, hearts, task chips). Run with `npm run test:run`.
+- **Tests** — Vitest + Vue Test Utils (jsdom) in `tests/`: store actions and persistence, `spl` collection naming, date/relative-time utilities, and component behavior (lock-screen codes, chat alignment, reminder math, modal, tab bar, hearts, task chips). Run with `npm run test:run`.
 - **Prettier** — repo-wide formatting (`.prettierrc.json`), checked with `npm run format:check`.
 - **Husky + lint-staged** — installed via the `prepare` script: the pre-commit hook formats staged files with Prettier, and the pre-push hook runs the full test suite.
 
 ## Firestore sync
 
-State lives in a Pinia store (`src/stores/us.js`). When Firebase is configured, every tab's data is stored in its own Firestore collection, all prefixed with **`sph`**:
+State lives in a Pinia store (`src/stores/us.js`). When Firebase is configured, every tab's data is stored in its own Firestore collection, all prefixed with **`spl`**:
 
-| Tab / data           | Collection            |
-| -------------------- | --------------------- |
-| Timeline             | `sph_milestones`      |
-| Memories             | `sph_memories`        |
-| Gallery              | `sph_gallery`         |
-| Places to Visit      | `sph_wishlist`        |
-| Places We Visited    | `sph_visited`         |
-| Goals                | `sph_goals`           |
-| Tasks                | `sph_tasks`           |
-| Reminders            | `sph_reminders`       |
-| Notes                | `sph_notes`           |
-| What You Did For Me  | `sph_gratitudeForMe`  |
-| What I Did For You   | `sph_gratitudeForYou` |
-| Chat                 | `sph_messages`        |
-| Per-user themes      | `sph_settings`        |
-| One-time seed marker | `sph_meta`            |
+| Tab / data               | Collection                               | Photo field → Storage folder     |
+| ------------------------ | ---------------------------------------- | -------------------------------- |
+| Timeline                 | `spl_milestones`                         | `photo` → `spl_media/milestones` |
+| Memories                 | `spl_memories`                           | `photo` → `spl_media/memories`   |
+| Gallery                  | `spl_gallery`                            | `src` → `spl_media/gallery`      |
+| Places to Visit          | `spl_wishlist`                           | `photo` → `spl_media/wishlist`   |
+| Places We Visited        | `spl_visited`                            | `photo` → `spl_media/visited`    |
+| Places (shared map)      | `spl_places`                             | `image` → `spl_media/places`     |
+| Plans                    | `spl_plans`                              | `image` → `spl_media/plans`      |
+| Goals                    | `spl_goals`                              | —                                |
+| Tasks                    | `spl_tasks`                              | —                                |
+| Reminders                | `spl_reminders`                          | —                                |
+| Wishes                   | `spl_wishes`                             | —                                |
+| Notes                    | `spl_notes`                              | —                                |
+| What You Did For Me      | `spl_gratitudeForMe`                     | —                                |
+| What I Did For You       | `spl_gratitudeForYou`                    | —                                |
+| Chat                     | `spl_messages`                           | —                                |
+| Per-user themes / emails | `spl_settings` (`themes`, `emails` docs) | —                                |
+
+Games scores and UI preferences (last tab, filters, drafts) are per device and stay in `localStorage`.
 
 To enable it:
 
-1. Create a Firebase project, add a **Web app**, and enable **Cloud Firestore**.
+1. Create a Firebase project, add a **Web app**, and enable **Cloud Firestore** and **Cloud Storage** (Storage needs the Blaze plan for new buckets).
 2. Copy `.env.example` to `.env.local` and fill in the config values from your Firebase project settings.
-3. Restart the dev server. On first run the demo data is seeded once; after that everything you add, edit, or delete on any tab is written to Firestore and streamed back live.
+3. Deploy the rules in this repo — `firebase deploy --only firestore:rules,storage` (see `firebase.json`), or paste `firestore.rules` / `storage.rules` into the console.
+4. Restart the dev server. Everything — stories, photos, lists, chat — comes from Firebase; the app ships with no built-in content, so tabs start empty. Everything you add, edit, or delete is written to Firestore and streamed live to both devices.
 
-The experience stays smooth either way: writes update the UI instantly (Firestore latency compensation), an offline-first persistent cache makes reloads render immediately and survives losing the connection, and changes sync in real time across both partners' devices. If the env vars are not set, the app falls back to `localStorage` exactly as before — no Firebase required to develop or demo. Note: gallery photos are stored as data URLs inside documents, so very large images can approach Firestore's 1 MB document limit (uploads are resized client-side to stay under it).
+**Who did what.** There's no Firebase login — the PIN lock decides who you are. Each person's user id is their date of birth (`ddmmyyyy`, `src/users.js → userId`), and every record is stamped with it: `addedBy` / `addedById` when created, `updatedBy` / `updatedById` on every change (`fromId` on chat messages). The detail view shows "added by … · last edited by …". The rules only accept those two ids in the stamp fields, but they can't verify identity — anyone with the project's web config can still read and write the `spl_` collections.
+
+### Places We Visited — trips, places & Google photos
+
+A visited trip has a **From / To** date range and a list of **places** (`stops`). Paste a Google Maps link for each place: full links fill in the name and location automatically; short share links (`maps.app.goo.gl/…`) can't be read by a browser, so type the place name for those. Each place gets a swipeable photo carousel of its Google photos (in the trip's detail view; the trip card shows one slide per place).
+
+Photos come from the Google **Places API** and need `VITE_GOOGLE_MAPS_API_KEY` (see `.env.example`: enable _Maps JavaScript API_ + _Places API (New)_ and restrict the key to your site). Without it, trips still work: the carousels are hidden and each place keeps its "Open in Maps" button. Google's terms don't allow storing its photos, so they're fetched live and cached only for the session, with each photographer credited.
+
+### Example data (how to fill each collection)
+
+[`firebase/sample-data.json`](firebase/sample-data.json) has example documents for every collection above, plus a `_fields` description of each field (types, allowed values, which ones hold Storage photo URLs). Use it as a reference when adding data by hand in the Firebase console, or load it to see every tab populated:
+
+```sh
+pnpm sample:import             # add the examples (skips ones already there)
+pnpm sample:import --force     # overwrite the examples with the file's version
+pnpm sample:import --dry-run   # preview, write nothing
+pnpm sample:clear              # remove them again
+```
+
+Every example's id starts with `sample-`, and the script only ever writes or deletes those ids — your real data is never touched. You can also edit or delete any example from inside the app. Sample photo fields are `null`: add photos from the app (✎ → Choose photo), which compresses and uploads them to Storage. The script uses the same `.env.local` config as the app (deploy `firestore.rules` first).
+
+### Offline & refresh-proof
+
+Every change updates the UI instantly and is never lost, even offline or across a refresh:
+
+- **Outbox** (`src/sync/outbox.js`) — each write is saved on the device (IndexedDB, falling back to `localStorage`) _before_ it's sent, and only removed once Firestore confirms it. Anything unconfirmed is replayed on reconnect, when the app comes back to the foreground, and on the next launch.
+- **Mirror** — a copy of every tab is kept on the device, so opening or refreshing the app with no network shows your last-known data immediately.
+- **Firestore's own offline cache** sits underneath as well.
+- **Offline photos** are compressed and held on the device, then uploaded to Storage when the connection returns (the item's photo URL is swapped automatically).
+- The header badge shows the state: _Synced_, _Syncing N_, or _Offline · N saved_.
+
+Conflicts are last-write-wins per item: if both of you edit the same item while one is offline, the later sync wins.
 
 ## Unlocking
 

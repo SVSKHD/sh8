@@ -156,7 +156,7 @@ const save = () => {
       <sph-glass-input v-model="form.date" label="Date (optional)" type="date" />
       <sph-glass-select v-model="form.status" label="Status" :options="STATUS_OPTIONS" />
       <sph-glass-select v-model="form.forWhom" label="For" :options="FOR_WHOM_OPTIONS" />
-      <sph-glass-photo-input v-model="form.image" label="Photo (optional)" />
+      <sph-glass-photo-input v-model="form.image" label="Photo (optional)" folder="plans" />
       <sph-glass-select
         v-if="placeOptions.length"
         v-model="form.linkedPlaceId"

@@ -1,10 +1,14 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { detailState as d, relDate } from "../../composables/detail";
 import { useUsStore } from "../../stores/us";
-import { fmtDate as fmt } from "../../utils/dates";
+import { getPlacePhotos, placePhotosEnabled } from "../../placePhotos";
+import { fmtDate as fmt, fmtDateRange, tripDays } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassModal from "../ui/SphGlassModal.vue";
 import SphHeartRating from "../ui/SphHeartRating.vue";
+import SphPhoto from "../ui/SphPhoto.vue";
+import SphPhotoCarousel from "../ui/SphPhotoCarousel.vue";
 import SphPhotoPlaceholder from "../ui/SphPhotoPlaceholder.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
@@ -50,6 +54,59 @@ const list = computed(() => {
 const index = computed(() => (d.item ? list.value.findIndex((x) => x.id === d.item.id) : -1));
 const rel = computed(() => (d.item ? relDate(d.item.date) : ""));
 
+/* what the read-aloud button says: the card's words, in reading order */
+const speakText = computed(() => {
+  const it = d.item;
+  if (!it) return "";
+  const when = (v) => (v ? fmt(v) + "." : "");
+  const by = it.addedBy ? (d.kind === "note" || d.kind === "gratitude" ? "Written" : "Added") + " by " + it.addedBy + "." : "";
+  const parts =
+    {
+      milestone: [when(it.date), it.title + ".", it.note],
+      memory: [it.caption, when(it.date)],
+      wishlist: [it.name + ".", it.note],
+      visited: [
+        it.name + ".",
+        fmtDateRange(it.dateFrom || it.date, it.dateTo) + ".",
+        it.story,
+        stopsOf(it).length
+          ? "Places: " +
+            stopsOf(it)
+              .map((s) => s.name)
+              .join(", ") +
+            "."
+          : "",
+      ],
+      place: [it.name + ".", it.visited ? "Visited " + when(it.visitedDate) : "", it.note],
+      note: [it.title ? it.title + "." : "", it.body, when(it.date)],
+      gratitude: [it.note, when(it.date)],
+    }[d.kind] || [];
+  return [...parts, by].filter(Boolean).join(" ");
+});
+
+/* visited trips: the places inside, each with photos looked up on demand */
+const stopsOf = (it) => (it && Array.isArray(it.stops) ? it.stops : []);
+const mapsUrl = (s) =>
+  s.url ||
+  "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(s.name) +
+    (s.placeId ? "&query_place_id=" + encodeURIComponent(s.placeId) : "");
+const stopPhotos = reactive({});
+watch(
+  () => (d.open && d.kind === "visited" && d.item ? stopsOf(d.item) : []),
+  (stops) => {
+    if (!placePhotosEnabled) return;
+    stops.forEach((s) => {
+      if (stopPhotos[s.id] && !stopPhotos[s.id].failed) return;
+      stopPhotos[s.id] = { loading: true, slides: [] };
+      getPlacePhotos(s, { max: 8 })
+        .then((slides) => (stopPhotos[s.id] = { loading: false, slides }))
+        .catch(() => (stopPhotos[s.id] = { loading: false, slides: [], failed: true }));
+    });
+  },
+  { immediate: true },
+);
+
 const step = (delta) => {
   const n = list.value.length;
   if (n < 2 || index.value < 0) return;
@@ -80,7 +137,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 </script>
 
 <template>
-  <sph-glass-modal v-model="d.open" :title="title">
+  <sph-glass-modal v-model="d.open" :title="title" :speak="speakText">
     <div v-if="d.item">
       <div class="detail-scroll" @touchstart="onTouchStart($event)" @touchend="onTouchEnd($event)">
         <div :key="d.item.id" class="detail-pane" :class="dir > 0 ? 'pane-next' : 'pane-prev'">
@@ -90,12 +147,20 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
               <span v-if="rel" class="chip">{{ rel }}</span>
             </div>
             <h2 class="font-display m-0 mt-1 text-3xl font-semibold leading-tight">{{ d.item.title }}</h2>
-            <sph-photo-placeholder v-if="d.item.photo" label="drop a photo of this day" :height="190" class="mt-3" />
+            <sph-photo
+              v-if="d.item.photo"
+              :src="d.item.photo"
+              :alt="d.item.title"
+              label="drop a photo of this day"
+              :height="220"
+              radius="1rem"
+              class="mt-3"
+            />
             <p v-if="d.item.note" class="detail-body mt-3">{{ d.item.note }}</p>
           </template>
 
           <template v-else-if="d.kind === 'memory'">
-            <sph-photo-placeholder label="memory photo" :height="200" />
+            <sph-photo :src="d.item.photo" :alt="d.item.caption" label="memory photo" :height="240" radius="1rem" />
             <p class="detail-body mt-3" style="color: var(--ink)">{{ d.item.caption }}</p>
             <div class="flex items-center justify-between gap-2 flex-wrap mt-2">
               <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">{{ fmt(d.item.date) }}</p>
@@ -108,17 +173,61 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
               <h2 class="font-display m-0 text-3xl font-semibold leading-tight">{{ d.item.name }}</h2>
               <span class="chip">{{ d.item.priority }}</span>
             </div>
+            <sph-photo
+              v-if="typeof d.item.photo === 'string' && d.item.photo"
+              :src="d.item.photo"
+              :alt="d.item.name"
+              :height="220"
+              radius="1rem"
+              class="mt-3"
+            />
             <p v-if="d.item.note" class="detail-body mt-3">{{ d.item.note }}</p>
           </template>
 
           <template v-else-if="d.kind === 'visited'">
             <h2 class="font-display m-0 text-3xl font-semibold leading-tight">{{ d.item.name }}</h2>
             <div class="flex items-center justify-between gap-2 flex-wrap mt-1">
-              <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">{{ fmt(d.item.date) }}</p>
-              <span v-if="rel" class="chip">{{ rel }}</span>
+              <p class="m-0 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">
+                {{ fmtDateRange(d.item.dateFrom || d.item.date, d.item.dateTo) }}
+              </p>
+              <span class="flex items-center gap-1.5">
+                <span v-if="tripDays(d.item.dateFrom || d.item.date, d.item.dateTo) > 1" class="chip chip-outline">
+                  {{ tripDays(d.item.dateFrom || d.item.date, d.item.dateTo) }} days
+                </span>
+                <span v-if="rel" class="chip">{{ rel }}</span>
+              </span>
             </div>
             <div class="mt-2"><sph-heart-rating :model-value="d.item.rating" readonly :size="20" /></div>
+            <sph-photo
+              v-if="typeof d.item.photo === 'string' && d.item.photo"
+              :src="d.item.photo"
+              :alt="d.item.name"
+              :height="220"
+              radius="1rem"
+              class="mt-3"
+            />
             <p v-if="d.item.story" class="detail-body mt-3">{{ d.item.story }}</p>
+
+            <!-- each place on the trip: its own Google photo carousel -->
+            <div v-for="(s, i) in stopsOf(d.item)" :key="s.id" class="trip-stop">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-display m-0 text-xl font-semibold leading-tight">
+                  <span class="trip-stop-n">{{ i + 1 }}</span> {{ s.name }}
+                </h3>
+                <a class="gbtn trip-maps" :href="mapsUrl(s)" target="_blank" rel="noopener noreferrer">
+                  <sph-icon name="MapPin" :size="13" /> Open in Maps
+                </a>
+              </div>
+              <sph-photo-carousel
+                v-if="placePhotosEnabled"
+                :slides="(stopPhotos[s.id] && stopPhotos[s.id].slides) || []"
+                :loading="!stopPhotos[s.id] || stopPhotos[s.id].loading"
+                :height="200"
+                :source="stopPhotos[s.id] && stopPhotos[s.id].slides.length ? 'Google Maps' : ''"
+                empty-label="no photos found for this place"
+                class="mt-2"
+              />
+            </div>
           </template>
 
           <template v-else-if="d.kind === 'place'">
@@ -126,7 +235,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
               <h2 class="font-display m-0 text-3xl font-semibold leading-tight">{{ d.item.name }}</h2>
               <span v-if="d.item.visited" class="chip">visited</span>
             </div>
-            <p v-if="d.item.addedBy" class="m-0 mt-1 text-xs" style="color: var(--ink-3)">added by {{ d.item.addedBy }}</p>
             <p
               v-if="d.item.visited && d.item.visitedDate"
               class="m-0 mt-1 text-xs font-bold uppercase tracking-widest"
@@ -158,6 +266,8 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
             </div>
             <p class="font-display italic text-xl detail-body mt-2" style="color: var(--ink)">{{ d.item.note }}</p>
           </template>
+
+          <sph-byline :item="d.item" :verb="d.kind === 'note' || d.kind === 'gratitude' ? 'written' : 'added'" class="mt-3" />
         </div>
       </div>
 
@@ -173,3 +283,32 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
     </div>
   </sph-glass-modal>
 </template>
+
+<style scoped>
+.trip-stop {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--glass-border);
+}
+.trip-stop-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  margin-right: 0.2rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: 0.15em;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.trip-maps {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  text-decoration: none;
+}
+</style>

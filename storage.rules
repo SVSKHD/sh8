@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// Cloud Storage rules for Us photos. There is no Firebase Auth (the PIN lock
+// is in the app), so these can't check *who* is uploading. They restrict
+// uploads to the app's folders and compressed WebP/JPEG.
+// Paste into Firebase console → Storage → Rules, or `firebase deploy --only storage`.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isUsImageFolder(folder) {
+      return folder in [
+        'milestones', 'memories', 'gallery', 'wishlist',
+        'visited', 'places', 'plans'
+      ];
+    }
+
+    match /spl_media/{folder}/{file} {
+      allow read, delete: if isUsImageFolder(folder);
+      allow create, update: if isUsImageFolder(folder)
+                    && request.resource.size < 2 * 1024 * 1024
+                    && request.resource.contentType.matches('image/(webp|jpeg)');
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

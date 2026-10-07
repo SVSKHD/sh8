@@ -1,6 +1,7 @@
 <script setup>
 import { burstHearts } from "../../composables/burstHearts";
 import { fmtDate } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassCard from "../ui/SphGlassCard.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
@@ -8,7 +9,7 @@ const props = defineProps({
   item: { type: Object, required: true },
   me: { type: String, default: "" },
 });
-const emit = defineEmits(["toggle", "remove"]);
+const emit = defineEmits(["toggle", "edit", "remove"]);
 
 const toggle = (ev) => {
   if (!props.item.done) burstHearts(ev.clientX, ev.clientY, 10);
@@ -32,8 +33,12 @@ const toggle = (ev) => {
       <div class="flex-1 min-w-0">
         <p class="task-title m-0 text-sm font-medium" :class="{ done: item.done }">{{ item.title }}</p>
         <p v-if="item.due" class="m-0 text-xs mt-0.5" style="color: var(--ink-3)">due {{ fmtDate(item.due) }}</p>
+        <sph-byline :item="item" class="mt-0.5" />
       </div>
       <span class="chip" :class="{ 'chip-outline': item.forWhom !== me }">{{ item.forWhom === me ? "Me" : item.forWhom }}</span>
+      <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Edit task" @click="$emit('edit')">
+        <sph-icon name="Pencil" :size="13" />
+      </button>
       <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete task" @click="$emit('remove')">
         <sph-icon name="Trash2" :size="14" />
       </button>

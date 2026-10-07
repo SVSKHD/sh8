@@ -1,12 +1,13 @@
 <script setup>
 import { showDetail } from "../../composables/detail";
 import { fmtDate } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassCard from "../ui/SphGlassCard.vue";
-import SphPhotoPlaceholder from "../ui/SphPhotoPlaceholder.vue";
+import SphPhoto from "../ui/SphPhoto.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
 const props = defineProps({ item: { type: Object, required: true } });
-defineEmits(["fav", "remove"]);
+defineEmits(["fav", "edit", "remove"]);
 
 const open = () => showDetail("memory", props.item);
 </script>
@@ -24,7 +25,7 @@ const open = () => showDetail("memory", props.item);
     @keydown.enter="open()"
   >
     <div class="relative">
-      <sph-photo-placeholder label="memory photo" :height="160" />
+      <sph-photo :src="item.photo" :alt="item.caption" label="memory photo" :height="160" />
       <button
         class="heart-btn absolute top-1.5 right-1.5 glass"
         style="border-radius: 999px"
@@ -37,11 +38,17 @@ const open = () => showDetail("memory", props.item);
     </div>
     <div class="px-2 pt-2 pb-1.5">
       <p class="m-0 text-sm font-medium leading-snug clamp-2 cap-2">{{ item.caption }}</p>
+      <sph-byline :item="item" class="mt-1" />
       <div class="flex items-center justify-between mt-1">
         <p class="m-0 text-xs" style="color: var(--ink-3)">{{ fmtDate(item.date) }}</p>
-        <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete memory" @click.stop="$emit('remove')">
-          <sph-icon name="Trash2" :size="14" />
-        </button>
+        <div class="flex items-center">
+          <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Edit memory" @click.stop="$emit('edit')">
+            <sph-icon name="Pencil" :size="13" />
+          </button>
+          <button class="gbtn gbtn-ghost gbtn-icon del-btn" aria-label="Delete memory" @click.stop="$emit('remove')">
+            <sph-icon name="Trash2" :size="14" />
+          </button>
+        </div>
       </div>
     </div>
   </sph-glass-card>

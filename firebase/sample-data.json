@@ -1,0 +1,594 @@
+{
+  "_readme": [
+    "Example data showing how to fill each Firestore collection the app reads.",
+    "Import it with `pnpm sample:import` and remove it again with `pnpm sample:clear`",
+    "(every sample doc id starts with `sample-`, so your own data is never touched).",
+    "Each collection lists its fields under `_fields`; the document id must equal the `id` field.",
+    "Photos are never stored in Firestore: the app's photo picker compresses the image, uploads it to",
+    "Cloud Storage under spl_media/<collection>/ and saves the download URL in the photo field.",
+    "In these samples photo fields are null — add photos from the app (✎ edit → Choose photo).",
+    "Dates are `YYYY-MM-DD` strings; `createdAt` is epoch milliseconds (newest shows first)."
+  ],
+  "collections": {
+    "spl_milestones": {
+      "_fields": {
+        "id": "document id (string)",
+        "title": "what happened — required",
+        "date": "YYYY-MM-DD — required; the timeline is sorted by this",
+        "note": "the story behind it (optional)",
+        "photo": "Storage download URL or null",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-milestone-1",
+          "title": "The day we met",
+          "date": "2022-03-14",
+          "note": "Rainy afternoon, the little coffee shop on 5th. You ordered my order before I did.",
+          "photo": null,
+          "createdAt": 1700000000005
+        },
+        {
+          "id": "sample-milestone-2",
+          "title": "First date",
+          "date": "2022-04-02",
+          "note": "Pasta, terrible jokes, and neither of us wanted to go home.",
+          "photo": null,
+          "createdAt": 1700000000004
+        },
+        {
+          "id": "sample-milestone-3",
+          "title": "First trip together",
+          "date": "2022-08-21",
+          "note": "The coast. We got lost twice and it became the best part.",
+          "photo": null,
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-milestone-4",
+          "title": "Said “I love you”",
+          "date": "2023-02-14",
+          "note": "You said it first. I said it back before you finished.",
+          "photo": null,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-milestone-5",
+          "title": "Moved in together",
+          "date": "2025-06-01",
+          "note": "Forty boxes, one tiny kitchen, all ours.",
+          "photo": null,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_memories": {
+      "_fields": {
+        "id": "document id",
+        "caption": "short caption (required unless there's a photo)",
+        "date": "YYYY-MM-DD",
+        "photo": "Storage download URL or null",
+        "favorite": "true / false — the ♥ on the card",
+        "h": "card height hint in px for the masonry layout (140–230)",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-memory-1",
+          "caption": "Sunset on the pier, your hand in mine",
+          "date": "2024-07-12",
+          "photo": null,
+          "favorite": true,
+          "h": 200,
+          "createdAt": 1700000000006
+        },
+        {
+          "id": "sample-memory-2",
+          "caption": "Pancake Sunday gone very wrong",
+          "date": "2024-02-04",
+          "photo": null,
+          "favorite": false,
+          "h": 150,
+          "createdAt": 1700000000005
+        },
+        {
+          "id": "sample-memory-3",
+          "caption": "Dancing in the kitchen at midnight",
+          "date": "2024-11-23",
+          "photo": null,
+          "favorite": true,
+          "h": 230,
+          "createdAt": 1700000000004
+        },
+        {
+          "id": "sample-memory-4",
+          "caption": "Your birthday surprise (you cried)",
+          "date": "2025-03-09",
+          "photo": null,
+          "favorite": false,
+          "h": 170,
+          "createdAt": 1700000000003
+        }
+      ]
+    },
+    "spl_gallery": {
+      "_fields": {
+        "id": "document id",
+        "src": "Storage download URL of the photo (null shows a placeholder until you add one)",
+        "caption": "caption",
+        "date": "YYYY-MM-DD",
+        "h": "card height hint in px",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-gallery-1",
+          "src": null,
+          "caption": "First picnic in the park",
+          "date": "2024-05-04",
+          "h": 180,
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-gallery-2",
+          "src": null,
+          "caption": "New Year’s kiss",
+          "date": "2026-01-01",
+          "h": 160,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-gallery-3",
+          "src": null,
+          "caption": "Road trip face",
+          "date": "2025-07-19",
+          "h": 200,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_wishlist": {
+      "_fields": {
+        "id": "document id",
+        "name": "the place — required",
+        "priority": "\"Soon\" | \"Someday\" | \"Dream\"",
+        "note": "why this one",
+        "photo": "Storage download URL or null",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-wishlist-1",
+          "name": "Kyoto in cherry blossom season",
+          "priority": "Dream",
+          "note": "Stay in a ryokan, slow mornings, tea.",
+          "photo": null,
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-wishlist-2",
+          "name": "Northern lights in Tromsø",
+          "priority": "Someday",
+          "note": "Cabin with a glass roof. Hot chocolate mandatory.",
+          "photo": null,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-wishlist-3",
+          "name": "That tiny ramen bar downtown",
+          "priority": "Soon",
+          "note": "The one with six seats we keep walking past.",
+          "photo": null,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_visited": {
+      "_fields": {
+        "id": "document id",
+        "name": "the trip — required",
+        "date": "YYYY-MM-DD the trip started (same as dateFrom; used for sorting)",
+        "dateFrom": "YYYY-MM-DD first day of the trip",
+        "dateTo": "YYYY-MM-DD last day of the trip (same as dateFrom for a day out)",
+        "stops": "places visited on the trip, in order: [{ id, name, url (Google Maps link or \"\"), placeId (Google place id or null), lat, lng (numbers or null) }] — each gets a Google photo carousel",
+        "rating": "1–5 hearts",
+        "story": "the part you'll retell forever",
+        "photo": "Storage download URL or null (cover photo)",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-visited-1",
+          "name": "Paris",
+          "date": "2023-05-19",
+          "dateFrom": "2023-05-19",
+          "dateTo": "2023-05-24",
+          "stops": [
+            {
+              "id": "sample-stop-1",
+              "name": "Sacré-Cœur",
+              "url": "https://www.google.com/maps/place/Sacr%C3%A9-C%C5%93ur/@48.8867,2.3431,17z",
+              "placeId": null,
+              "lat": 48.8867,
+              "lng": 2.3431
+            },
+            {
+              "id": "sample-stop-2",
+              "name": "Eiffel Tower",
+              "url": "https://www.google.com/maps/search/?api=1&query=Eiffel+Tower",
+              "placeId": null,
+              "lat": null,
+              "lng": null
+            }
+          ],
+          "rating": 5,
+          "story": "We climbed Montmartre at sunrise and shared one croissant because we were broke.",
+          "photo": null,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-visited-2",
+          "name": "Lisbon",
+          "date": "2024-09-30",
+          "dateFrom": "2024-09-30",
+          "dateTo": "2024-09-30",
+          "stops": [],
+          "rating": 4,
+          "story": "Tram 28, pasteis de nata, and you singing fado very badly.",
+          "photo": null,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_places": {
+      "_fields": {
+        "id": "document id",
+        "name": "the place — required",
+        "note": "details",
+        "image": "Storage download URL or null",
+        "visited": "true / false",
+        "visitedDate": "YYYY-MM-DD when visited, else null",
+        "addedBy": "\"Hithesh\" | \"Spoorthy\" (attribution only)",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-place-1",
+          "name": "Kyoto in cherry blossom season",
+          "note": "Stay in a ryokan, slow mornings, tea.",
+          "image": null,
+          "visited": false,
+          "visitedDate": null,
+          "addedBy": "Hithesh",
+          "createdAt": 1700000000001
+        },
+        {
+          "id": "sample-place-2",
+          "name": "That tiny ramen bar downtown",
+          "note": "The one with six seats we keep walking past.",
+          "image": null,
+          "visited": false,
+          "visitedDate": null,
+          "addedBy": "Spoorthy",
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-place-3",
+          "name": "Paris",
+          "note": "Climbed Montmartre at sunrise and shared one croissant.",
+          "image": null,
+          "visited": true,
+          "visitedDate": "2023-05-19",
+          "addedBy": "Hithesh",
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-place-4",
+          "name": "The lake cabin",
+          "note": "No wifi for three days. Best three days.",
+          "image": null,
+          "visited": true,
+          "visitedDate": "2025-08-15",
+          "addedBy": "Spoorthy",
+          "createdAt": 1700000000004
+        }
+      ]
+    },
+    "spl_plans": {
+      "_fields": {
+        "id": "document id",
+        "title": "the plan — required",
+        "details": "details",
+        "date": "YYYY-MM-DD or \"\" for no date",
+        "status": "\"idea\" | \"planned\" | \"done\"",
+        "forWhom": "\"Hithesh\" | \"Spoorthy\" | \"Both\"",
+        "addedBy": "\"Hithesh\" | \"Spoorthy\"",
+        "image": "Storage download URL or null",
+        "linkedPlaceId": "optional spl_places id or null",
+        "linkedReminderId": "optional spl_reminders id or null",
+        "linkedWishId": "optional spl_wishes id or null",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-plan-1",
+          "title": "Rooftop picnic",
+          "details": "Checkered blanket, that cheap wine we like, and the sunset.",
+          "date": "2026-07-18",
+          "status": "planned",
+          "forWhom": "Both",
+          "addedBy": "Hithesh",
+          "image": null,
+          "linkedPlaceId": null,
+          "linkedReminderId": null,
+          "linkedWishId": null,
+          "createdAt": 1700000000001
+        },
+        {
+          "id": "sample-plan-2",
+          "title": "Learn to make pasta from scratch",
+          "details": "Find a weekend, buy the attachment for the mixer.",
+          "date": "",
+          "status": "idea",
+          "forWhom": "Both",
+          "addedBy": "Spoorthy",
+          "image": null,
+          "linkedPlaceId": null,
+          "linkedReminderId": null,
+          "linkedWishId": null,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-plan-3",
+          "title": "Surprise movie night",
+          "details": "Her pick this time. Popcorn, blanket fort, phones off.",
+          "date": "2026-05-30",
+          "status": "done",
+          "forWhom": "Both",
+          "addedBy": "Hithesh",
+          "image": null,
+          "linkedPlaceId": null,
+          "linkedReminderId": null,
+          "linkedWishId": null,
+          "createdAt": 1700000000003
+        }
+      ]
+    },
+    "spl_goals": {
+      "_fields": {
+        "id": "document id",
+        "title": "the goal — required",
+        "targetDate": "YYYY-MM-DD or \"\"",
+        "progress": "0–100 (moves in steps of 10 from the app)",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-goal-1",
+          "title": "Save for the Japan trip",
+          "targetDate": "2027-03-01",
+          "progress": 60,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-goal-2",
+          "title": "Cook 30 new recipes together",
+          "targetDate": "2026-12-31",
+          "progress": 40,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_tasks": {
+      "_fields": {
+        "id": "document id",
+        "title": "the task — required",
+        "forWhom": "\"Hithesh\" | \"Spoorthy\" | \"Both\"",
+        "addedBy": "\"Hithesh\" | \"Spoorthy\"",
+        "due": "YYYY-MM-DD or \"\"",
+        "done": "true / false",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-task-1",
+          "title": "Book anniversary dinner",
+          "forWhom": "Spoorthy",
+          "addedBy": "Hithesh",
+          "due": "2026-06-20",
+          "done": false,
+          "createdAt": 1700000000004
+        },
+        {
+          "id": "sample-task-2",
+          "title": "Print photos for the hallway",
+          "forWhom": "Hithesh",
+          "addedBy": "Spoorthy",
+          "due": "2026-06-14",
+          "done": false,
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-task-3",
+          "title": "Plan the weekend hike",
+          "forWhom": "Both",
+          "addedBy": "Spoorthy",
+          "due": "2026-06-12",
+          "done": true,
+          "createdAt": 1700000000002
+        }
+      ]
+    },
+    "spl_reminders": {
+      "_fields": {
+        "id": "document id",
+        "title": "what to remember — required",
+        "note": "details",
+        "anchorDate": "YYYY-MM-DD the first occurrence",
+        "intervalDays": "repeat every N days (0 = one-time, 365 = yearly)",
+        "scope": "\"common\" (shared, read-only in the app) | \"user\" (private to ownerId)",
+        "ownerId": "null for common, else \"Hithesh\" | \"Spoorthy\"",
+        "enabled": "true / false",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-reminder-1",
+          "title": "Monthsary date night",
+          "note": "Somewhere new each time.",
+          "anchorDate": "2026-06-02",
+          "intervalDays": 30,
+          "scope": "common",
+          "ownerId": null,
+          "enabled": true,
+          "createdAt": 1700000000003
+        },
+        {
+          "id": "sample-reminder-2",
+          "title": "Write a little love note",
+          "note": "Hide it where they'll find it.",
+          "anchorDate": "2026-06-01",
+          "intervalDays": 22,
+          "scope": "common",
+          "ownerId": null,
+          "enabled": true,
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-reminder-3",
+          "title": "Our anniversary",
+          "note": "The one that started it all.",
+          "anchorDate": "2022-04-02",
+          "intervalDays": 365,
+          "scope": "common",
+          "ownerId": null,
+          "enabled": true,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_wishes": {
+      "_fields": {
+        "id": "document id",
+        "from": "\"Hithesh\" | \"Spoorthy\" — who wrote it",
+        "to": "the partner it's for",
+        "message": "the wish text",
+        "scheduledDate": "ISO date-time it unlocks, e.g. 2026-12-25T09:00",
+        "flair": "optional decoration key or \"\"",
+        "delivered": "false until the scheduled time passes",
+        "seenAt": "null until the recipient opens it",
+        "cancelled": "true / false",
+        "googleEventId": "set by Google Calendar sync, else null",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-wish-1",
+          "from": "Hithesh",
+          "to": "Spoorthy",
+          "message": "Merry Christmas, cuore mia. Look under the second cushion ♥",
+          "scheduledDate": "2026-12-25T09:00",
+          "flair": "",
+          "delivered": false,
+          "seenAt": null,
+          "cancelled": false,
+          "googleEventId": null,
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_notes": {
+      "_fields": {
+        "id": "document id",
+        "title": "optional title",
+        "body": "the note — required (multi-line is fine)",
+        "date": "YYYY-MM-DD",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-note-1",
+          "title": "Gift ideas",
+          "body": "that ceramic mug she pointed at twice\nfilm camera\npicnic blanket (red check)",
+          "date": "2026-05-30",
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-note-2",
+          "title": "Our pizza dough",
+          "body": "500g flour, 325ml water, 10g salt, 3g yeast.\ncold rise 48h — do NOT rush it again.",
+          "date": "2026-02-21",
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_gratitudeForMe": {
+      "_fields": {
+        "id": "document id",
+        "note": "the sweet thing — required",
+        "date": "YYYY-MM-DD",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-gratitude-me-1",
+          "note": "You brought me soup and stayed on the phone while I fell asleep.",
+          "date": "2026-06-08",
+          "createdAt": 1700000000002
+        },
+        {
+          "id": "sample-gratitude-me-2",
+          "note": "Flowers. No reason. Just because it was Tuesday.",
+          "date": "2026-05-17",
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_gratitudeForYou": {
+      "_fields": {
+        "id": "document id",
+        "note": "the sweet thing — required",
+        "date": "YYYY-MM-DD",
+        "createdAt": "epoch ms"
+      },
+      "docs": [
+        {
+          "id": "sample-gratitude-you-1",
+          "note": "Made your coffee before your alarm went off.",
+          "date": "2026-06-05",
+          "createdAt": 1700000000001
+        }
+      ]
+    },
+    "spl_messages": {
+      "_fields": {
+        "id": "document id",
+        "from": "\"Hithesh\" | \"Spoorthy\"",
+        "text": "the message",
+        "ts": "ISO date-time — chat is sorted oldest → newest by this",
+        "edited": "optional, true once edited"
+      },
+      "docs": [
+        {
+          "id": "sample-message-1",
+          "from": "Spoorthy",
+          "text": "Movie night Friday? I’m picking this time 🍿",
+          "ts": "2026-06-09T19:42:00"
+        },
+        {
+          "id": "sample-message-2",
+          "from": "Hithesh",
+          "text": "Only if I get veto power",
+          "ts": "2026-06-09T19:44:00"
+        }
+      ]
+    },
+    "spl_settings": {
+      "_fields": {
+        "themes": "doc id `themes`: { \"Hithesh\": \"rose\", \"Spoorthy\": \"lavender\" } — each person's theme",
+        "emails": "doc id `emails`: { \"Hithesh\": \"…@gmail.com\" } — Google account for calendar invites (set from the app)"
+      },
+      "docs": []
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SphWishForm from "../src/components/cards/SphWishForm.vue";
+import SphGlassDatePicker from "../src/components/ui/SphGlassDatePicker.vue";
 
 /* SphGlassModal teleports to <body>, outside the mount wrapper's own root,
    so form content must be queried/interacted with via raw DOM (matching
@@ -70,9 +71,7 @@ describe("SphWishForm draft/resume", () => {
     vi.advanceTimersByTime(800);
     await w.vm.$nextTick();
     expect(localStorage.getItem("us-wish-draft-Hithesh")).toBeTruthy();
-    const dateInput = document.body.querySelectorAll("input.ginput")[0];
-    dateInput.value = "2026-08-01T10:00";
-    dateInput.dispatchEvent(new Event("input"));
+    w.findComponent(SphGlassDatePicker).vm.$emit("update:modelValue", "2026-08-01T10:00");
     await w.vm.$nextTick();
     clickByText("Schedule ♥");
     await w.vm.$nextTick();

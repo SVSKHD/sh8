@@ -11,6 +11,8 @@
     "test:run": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "sample:import": "node scripts/sample-data.mjs import",
+    "sample:clear": "node scripts/sample-data.mjs clear",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -33,6 +35,7 @@
     "prettier": "^3.8.4",
     "tailwindcss": "^4.1.11",
     "vite": "^7.0.0",
+    "vite-plugin-vue-devtools": "^8.2.1",
     "vitest": "^4.1.8"
   }
 }

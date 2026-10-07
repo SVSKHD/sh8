@@ -240,6 +240,118 @@ html[data-theme="wine"] {
   --stripe: rgba(214, 138, 99, 0.08);
 }
 
+html[data-theme="aurora"] {
+  --bg-base: #0b1b22;
+  --blob-1: #0b242b;
+  --blob-2: #123b3c;
+  --blob-3: #17294a;
+  --blob-4: #263b2e;
+  --ink: #e1f7f0;
+  --ink-2: rgba(225, 247, 240, 0.7);
+  --ink-3: rgba(225, 247, 240, 0.44);
+  --accent: #79e0c0;
+  --accent-soft: rgba(121, 224, 192, 0.16);
+  --on-accent: #09251f;
+  --glass-shadow: rgba(0, 0, 0, 0.42);
+  --stripe: rgba(121, 224, 192, 0.08);
+}
+
+html[data-theme="ember"] {
+  --bg-base: #1d120f;
+  --blob-1: #25150f;
+  --blob-2: #48221a;
+  --blob-3: #302044;
+  --blob-4: #543022;
+  --ink: #fff0e7;
+  --ink-2: rgba(255, 240, 231, 0.7);
+  --ink-3: rgba(255, 240, 231, 0.44);
+  --accent: #f39b69;
+  --accent-soft: rgba(243, 155, 105, 0.16);
+  --on-accent: #35170e;
+  --glass-shadow: rgba(0, 0, 0, 0.44);
+  --stripe: rgba(243, 155, 105, 0.08);
+}
+
+html[data-theme="forestNight"] {
+  --bg-base: #0d1b16;
+  --blob-1: #10251d;
+  --blob-2: #183c2a;
+  --blob-3: #172d3a;
+  --blob-4: #293b24;
+  --ink: #e5f5e8;
+  --ink-2: rgba(229, 245, 232, 0.7);
+  --ink-3: rgba(229, 245, 232, 0.44);
+  --accent: #9bd3a6;
+  --accent-soft: rgba(155, 211, 166, 0.16);
+  --on-accent: #143120;
+  --glass-shadow: rgba(0, 0, 0, 0.42);
+  --stripe: rgba(155, 211, 166, 0.08);
+}
+
+html[data-theme="cosmic"] {
+  --bg-base: #141027;
+  --blob-1: #17112d;
+  --blob-2: #302053;
+  --blob-3: #162e50;
+  --blob-4: #442343;
+  --ink: #f1ecff;
+  --ink-2: rgba(241, 236, 255, 0.7);
+  --ink-3: rgba(241, 236, 255, 0.44);
+  --accent: #bba6ff;
+  --accent-soft: rgba(187, 166, 255, 0.16);
+  --on-accent: #24164c;
+  --glass-shadow: rgba(0, 0, 0, 0.46);
+  --stripe: rgba(187, 166, 255, 0.08);
+}
+
+html[data-theme="expression"] {
+  --bg-base: #1b1024;
+  --blob-1: #26132e;
+  --blob-2: #54213f;
+  --blob-3: #172f4a;
+  --blob-4: #61332d;
+  --ink: #fff0f0;
+  --ink-2: rgba(255, 240, 240, 0.72);
+  --ink-3: rgba(255, 240, 240, 0.45);
+  --accent: #ff8b7b;
+  --accent-soft: rgba(255, 139, 123, 0.17);
+  --on-accent: #3b1620;
+  --glass-shadow: rgba(0, 0, 0, 0.46);
+  --stripe: rgba(255, 139, 123, 0.08);
+}
+
+html[data-theme="tiramisu"] {
+  --bg-base: #1b130f;
+  --blob-1: #241912;
+  --blob-2: #4a2c1e;
+  --blob-3: #2f2330;
+  --blob-4: #60412a;
+  --ink: #fff1df;
+  --ink-2: rgba(255, 241, 223, 0.72);
+  --ink-3: rgba(255, 241, 223, 0.45);
+  --accent: #e5b878;
+  --accent-soft: rgba(229, 184, 120, 0.17);
+  --on-accent: #382112;
+  --glass-shadow: rgba(0, 0, 0, 0.46);
+  --stripe: rgba(229, 184, 120, 0.08);
+}
+
+html[data-theme="espressoMartini"] {
+  --bg-base: #341100;
+  --blob-1: #4f351c;
+  --blob-2: #713105;
+  --blob-3: #341100;
+  --blob-4: #7f5e35;
+  --ink: #fff7e8;
+  --ink-2: rgba(255, 247, 232, 0.72);
+  --ink-3: rgba(255, 247, 232, 0.45);
+  --accent: #cfab71;
+  --accent-soft: rgba(207, 171, 113, 0.18);
+  --on-accent: #341100;
+  --glass-shadow: rgba(20, 7, 0, 0.52);
+  --stripe: rgba(255, 247, 232, 0.08);
+}
+
 /* ============ base ============ */
 
 * {
@@ -572,33 +684,56 @@ html[data-mode="dark"] .tab-btn.active {
   pointer-events: none;
 }
 
+/* floating tab label (teleported to <body> by SphGlassTabBar, positioned
+   in viewport coords so the scrolling tab bar can't clip it) */
 .tab-tip {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
+  position: fixed;
+  z-index: 90;
+  transform: translateX(-50%);
   font-size: 0.72rem;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
   color: var(--ink);
-  background: var(--glass-fill-strong);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--glass-fill-strong) 82%, var(--accent-soft) 18%),
+    var(--glass-fill)
+  );
+  -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  backdrop-filter: blur(22px) saturate(1.45);
+  border: 1px solid color-mix(in srgb, var(--glass-border) 72%, var(--accent) 28%);
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  opacity: 0;
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 10px 28px -10px var(--glass-shadow);
+  padding: 0.32rem 0.75rem;
   pointer-events: none;
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
-  z-index: 30;
+  animation: tab-tip-in 0.16s ease both;
 }
-.tab-btn:hover .tab-tip,
-.tab-btn:focus-visible .tab-tip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.tab-tip.above {
+  transform: translate(-50%, -100%);
+  animation-name: tab-tip-in-above;
+}
+.tab-tip.active {
+  color: var(--accent);
+}
+@keyframes tab-tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+}
+@keyframes tab-tip-in-above {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% + 4px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-tip {
+    animation: none;
+  }
 }
 
 /* ============ tab content transitions ============ */
@@ -633,18 +768,26 @@ html[data-mode="dark"] .tab-btn.active {
 .photo-ph {
   position: relative;
   border-radius: 1rem;
-  border: 1px dashed var(--glass-border);
-  background: repeating-linear-gradient(-45deg, var(--stripe), var(--stripe) 8px, transparent 8px, transparent 16px);
+  border: 1px dashed color-mix(in srgb, var(--glass-border) 50%, var(--accent) 35%);
+  background:
+    radial-gradient(120% 90% at 30% 20%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--glass-fill-strong), var(--glass-fill));
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   overflow: hidden;
+  color: color-mix(in srgb, var(--accent) 55%, var(--ink-3));
 }
-.photo-ph span {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
+.photo-ph-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--ink-3);
+  text-align: center;
+  padding: 0 0.8rem;
+  line-height: 1.3;
 }
 
 /* ============ timeline ============ */
@@ -929,8 +1072,12 @@ html[data-mode="dark"] .chip {
 .pad-key:hover {
   background: var(--glass-fill-strong);
 }
-.pad-key:active {
+.pad-key:active,
+.pad-key.pressed {
   transform: scale(0.94);
+}
+.pad-key.pressed {
+  background: var(--glass-fill-strong);
 }
 .pad-key.blank {
   visibility: hidden;
@@ -1107,6 +1254,485 @@ html[data-mode="dark"] .chip {
   opacity: 0.6;
   color: var(--ink-2);
 }
+/* birthday countdown, embedded at the foot of the greeting card */
+/* greeting card: greeting + weather on the left, birthday deck on the right */
+.greet-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem 1.4rem;
+}
+.greet-main {
+  min-width: 0;
+}
+/* tab section heading (SphSectionTitle) */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.1rem;
+  min-width: 0;
+}
+.section-title.flush {
+  margin-bottom: 0;
+}
+.section-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.95rem;
+  color: var(--on-accent);
+  background: linear-gradient(145deg, var(--accent), color-mix(in srgb, var(--accent) 72%, var(--ink)));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 20px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  animation: welcome-pop 0.4s cubic-bezier(0.3, 1.3, 0.4, 1) both;
+}
+.section-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-badge {
+    animation: none;
+  }
+}
+.greet-name {
+  padding-right: 0.12em; /* italic overhang, and air before the ❤ */
+  margin-right: 0.15em;
+  background: linear-gradient(100deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--ink)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bday-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+/* tab bar row along the bottom of the greeting card */
+.greet-tabs {
+  margin-top: 1rem;
+}
+.greet-tabs .tabbar {
+  /* already on glass — keep the bar light so it doesn't double-frost, and
+     stretch it so every tab fits without scrolling */
+  width: 100%;
+  background: color-mix(in srgb, var(--glass-fill) 60%, transparent);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+.greet-tabs .tab-btn {
+  flex: 1 1 0;
+  min-width: 2.5rem;
+  padding: 0.62rem 0;
+  display: flex;
+  justify-content: center;
+}
+/* active tab: soft accent pill instead of plain glass */
+.tab-indicator {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 20%, var(--glass-fill-strong)),
+    color-mix(in srgb, var(--accent) 8%, var(--glass-fill-strong))
+  );
+  border-color: color-mix(in srgb, var(--glass-border) 60%, var(--accent) 40%);
+}
+.tab-btn .inline-flex {
+  transition: transform 0.25s cubic-bezier(0.3, 1.3, 0.4, 1);
+}
+.tab-btn:hover .inline-flex {
+  transform: translateY(-1px) scale(1.08);
+}
+.tab-btn.active .inline-flex {
+  transform: scale(1.1);
+}
+/* narrow screens: stack the columns into rows */
+@media (max-width: 640px) {
+  .greet-tabs {
+    display: none; /* the tab bar is teleported out and docked to the bottom */
+  }
+  .greet-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+  /* birthday pills: compact, one line each */
+  .bday-rows {
+    gap: 0.4rem;
+  }
+  .bday-row {
+    padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+    gap: 0.6rem;
+  }
+  .bday-row > .min-w-0 {
+    flex: 1;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .bday-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .bday-count {
+    margin: 0;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .bday-turning {
+    display: none;
+  }
+  /* compact weather on phones */
+  .greet-temp {
+    font-size: 1.4rem;
+  }
+}
+/* each birthday is a soft glass pill */
+.bday-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.9rem 0.55rem 0.55rem;
+  border-radius: 1.1rem;
+  background: color-mix(in srgb, var(--glass-fill) 70%, transparent);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  min-width: 0;
+}
+.bday-row.is-today {
+  background: linear-gradient(135deg, var(--accent-soft), color-mix(in srgb, var(--glass-fill) 70%, transparent));
+  border-color: color-mix(in srgb, var(--glass-border) 50%, var(--accent) 50%);
+}
+.bday-icon {
+  color: var(--accent);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+.bday-who {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--ink-3);
+  text-transform: lowercase;
+}
+.bday-count {
+  margin: 0.1rem 0 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.bday-num {
+  font-family: inherit;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.bday-turning {
+  font-size: 0.8rem;
+  color: var(--ink-3);
+}
+.bday-row.is-today .bday-count {
+  color: var(--accent);
+  font-weight: 600;
+}
+.bday-dialog {
+  text-align: center;
+}
+
+/* ============ games tab ============ */
+.game-card {
+  max-width: 24rem;
+  margin: 0 auto;
+}
+.game-score {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+  text-align: center;
+}
+.game-score > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.55rem 0.4rem;
+  border-radius: 1rem;
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+}
+.game-score-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.game-score-label {
+  margin-top: 0.25rem;
+  font-size: 0.66rem;
+  color: var(--ink-3);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.game-status {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--ink-2);
+  min-height: 1.6rem;
+}
+.game-status.win {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* rock paper scissors */
+.rps-arena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+.rps-hand {
+  font-size: 3.6rem;
+  line-height: 1;
+  width: 5.5rem;
+  height: 5.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.4rem;
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+.rps-hand.flip {
+  transform: scaleX(-1);
+}
+.rps-hand.shaking {
+  animation: rps-shake 0.22s ease-in-out 3;
+}
+.rps-hand.flip.shaking {
+  animation-name: rps-shake-flip;
+}
+@keyframes rps-shake {
+  50% {
+    transform: translateY(-10px) rotate(-8deg);
+  }
+}
+@keyframes rps-shake-flip {
+  0%,
+  100% {
+    transform: scaleX(-1);
+  }
+  50% {
+    transform: scaleX(-1) translateY(-10px) rotate(-8deg);
+  }
+}
+.rps-vs {
+  font-size: 1.1rem;
+  color: var(--ink-3);
+}
+.rps-choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+.rps-choice {
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.8rem 0.4rem;
+  border-radius: 1.1rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.rps-choice:hover:not(:disabled) {
+  background: var(--glass-fill-strong);
+}
+.rps-choice:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.rps-choice:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.rps-choice.picked {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.rps-choice-emoji {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+.rps-choice-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: capitalize;
+}
+
+/* after dark (romantic truth or dare) */
+.ad-gate {
+  text-align: center;
+  padding: 1.2rem 0.5rem;
+}
+.ad-gate-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+.ad-done {
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+.ad-card {
+  --heat: var(--accent);
+  position: relative;
+  min-height: 11rem;
+  margin: 0.9rem 0 1.1rem;
+  padding: 1.4rem 1.3rem;
+  border-radius: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--glass-border) 55%, var(--heat) 45%);
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--heat) 22%, transparent), transparent 70%),
+    var(--glass-fill-strong);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 14px 40px -18px color-mix(in srgb, var(--heat) 60%, transparent);
+}
+.ad-card.heat-sweet {
+  --heat: #f29bb8;
+}
+.ad-card.heat-flirty {
+  --heat: #e0526f;
+}
+.ad-card.heat-spicy {
+  --heat: #d6283c;
+}
+.ad-card.open {
+  animation: ad-flip 0.45s cubic-bezier(0.3, 1.2, 0.4, 1) both;
+}
+@keyframes ad-flip {
+  from {
+    transform: rotateY(80deg) scale(0.95);
+    opacity: 0;
+  }
+}
+.ad-kind {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--heat);
+}
+.ad-text {
+  margin: 0.55rem 0 0;
+  font-size: 1.35rem;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.ad-for {
+  margin: 0.7rem 0 0;
+  font-size: 0.72rem;
+  color: var(--ink-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-card.open {
+    animation: none;
+  }
+}
+
+/* tic tac toe */
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  width: min(100%, 18rem);
+  margin: 0 auto;
+}
+.ttt-cell {
+  aspect-ratio: 1;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease;
+}
+.ttt-cell:hover:not(:disabled) {
+  background: var(--glass-fill-strong);
+}
+.ttt-cell:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.ttt-cell:disabled {
+  cursor: default;
+}
+.ttt-mark {
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+  animation: welcome-pop 0.3s cubic-bezier(0.3, 1.3, 0.4, 1) both;
+}
+.ttt-cell.x .ttt-mark {
+  color: var(--accent);
+}
+.ttt-cell.o .ttt-mark {
+  color: var(--ink-2);
+}
+.ttt-cell.win {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rps-hand.shaking,
+  .ttt-mark {
+    animation: none;
+  }
+}
+.bday-dialog-cake {
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: welcome-pop 0.6s cubic-bezier(0.3, 1.3, 0.4, 1) both;
+}
 .greet-love-author {
   display: block;
   margin-top: 0.05rem;
@@ -1208,6 +1834,20 @@ html[data-mode="dark"] .chip {
   margin-top: 0.22rem;
   padding: 0 0.4rem;
 }
+.chat-act {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+  padding: 0.15rem;
+  border: none;
+  background: transparent;
+  color: var(--ink-3);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chat-act:hover {
+  color: var(--accent);
+}
 
 .seg {
   display: inline-flex;
@@ -1218,7 +1858,27 @@ html[data-mode="dark"] .chip {
   background: var(--glass-fill);
   border: 1px solid var(--glass-border);
 }
+.seg-filter {
+  position: relative;
+}
+.seg-filter .seg-indicator {
+  position: absolute;
+  z-index: 0;
+  top: 0.22rem;
+  bottom: 0.22rem;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--glass-highlight) 70%, transparent),
+    0 4px 12px -5px var(--glass-shadow);
+  transition:
+    left 0.3s cubic-bezier(0.3, 1.2, 0.4, 1),
+    width 0.3s cubic-bezier(0.3, 1.2, 0.4, 1),
+    opacity 0.15s ease;
+  pointer-events: none;
+}
 .seg button {
+  font: inherit;
   font: inherit;
   font-size: 0.74rem;
   font-weight: 700;
@@ -1228,13 +1888,17 @@ html[data-mode="dark"] .chip {
   padding: 0.32rem 0.7rem;
   border-radius: 999px;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
   transition:
-    background 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    transform 0.18s ease;
 }
 .seg button.on {
-  background: var(--accent);
   color: var(--on-accent);
+}
+.seg button:active {
+  transform: scale(0.96);
 }
 
 /* ============ reminders ============ */
@@ -1576,7 +2240,8 @@ html[data-mode="dark"] .chip {
 .content-panel {
   border-radius: 1.8rem;
   padding: clamp(1rem, 3vw, 1.8rem);
-  height: clamp(24rem, calc(100vh - 21rem), 46rem);
+  /* tall: only the greeting card and tab bar sit above it */
+  height: clamp(30rem, calc(100vh - 13rem), 64rem);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
@@ -1613,17 +2278,6 @@ html[data-mode="dark"] .chip {
       0 14px 44px -8px var(--glass-shadow);
   }
 
-  /* tooltips flip above the bar so they stay on screen */
-  .tab-tip {
-    top: auto;
-    bottom: calc(100% + 10px);
-    transform: translateX(-50%) translateY(4px);
-  }
-  .tab-btn:hover .tab-tip,
-  .tab-btn:focus-visible .tab-tip {
-    transform: translateX(-50%) translateY(0);
-  }
-
   /* lift the + button above the bottom bar */
   .fab {
     right: 1rem;
@@ -1645,6 +2299,6 @@ html[data-mode="dark"] .chip {
 
   /* fixed bottom bar replaces in-flow tab bar; recompute the standard panel height */
   .content-panel {
-    height: clamp(20rem, calc(100vh - 18rem - env(safe-area-inset-bottom, 0px)), 46rem);
+    height: clamp(26rem, calc(100vh - 11rem - env(safe-area-inset-bottom, 0px)), 60rem);
   }
 }

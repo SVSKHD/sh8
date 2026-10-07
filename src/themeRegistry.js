@@ -19,6 +19,13 @@ export const THEMES = [
   { id: "noir", label: "Velvet Noir", mode: "dark", a: "#241a2e", b: "#c9a0dc" },
   { id: "eclipse", label: "Eclipse", mode: "dark", a: "#0f1626", b: "#7fb2e3" },
   { id: "wine", label: "Midnight Wine", mode: "dark", a: "#241017", b: "#d68a63" },
+  { id: "aurora", label: "Aurora Night", mode: "dark", a: "#0b242b", b: "#79e0c0" },
+  { id: "ember", label: "Ember Afterglow", mode: "dark", a: "#25150f", b: "#f39b69" },
+  { id: "forestNight", label: "Forest Night", mode: "dark", a: "#10251d", b: "#9bd3a6" },
+  { id: "cosmic", label: "Cosmic Velvet", mode: "dark", a: "#17112d", b: "#bba6ff" },
+  { id: "expression", label: "Expression", mode: "dark", a: "#26132e", b: "#ff8b7b" },
+  { id: "tiramisu", label: "Tiramisu", mode: "dark", a: "#241912", b: "#e5b878" },
+  { id: "espressoMartini", label: "Espresso Martini", mode: "dark", a: "#713105", b: "#cfab71" },
 ];
 
 const MODE_BY_ID = Object.fromEntries(THEMES.map((t) => [t.id, t.mode]));

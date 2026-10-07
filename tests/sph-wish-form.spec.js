@@ -1,11 +1,17 @@
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import SphWishForm from "../src/components/cards/SphWishForm.vue";
+import SphGlassDatePicker from "../src/components/ui/SphGlassDatePicker.vue";
 
 const typeInto = async (w, selector, value) => {
   const el = document.body.querySelector(selector);
   el.value = value;
   el.dispatchEvent(new Event("input"));
+  await w.vm.$nextTick();
+};
+/* the glass picker emits the same "YYYY-MM-DDTHH:mm" string the native input did */
+const pickDateTime = async (w, value) => {
+  w.findComponent(SphGlassDatePicker).vm.$emit("update:modelValue", value);
   await w.vm.$nextTick();
 };
 const clickByText = (text) => {
@@ -31,13 +37,13 @@ describe("SphWishForm", () => {
       },
     });
     expect(document.body.querySelector("textarea").value).toBe("You mean the world to me");
-    expect(document.body.querySelector('input[type="datetime-local"]').value).toBe("2026-07-20T18:30");
+    expect(document.body.querySelector(".dp-value").textContent).toContain("Mon, Jul 20, 2026 · 06:30 PM");
   });
 
   it("saves with the recipient auto-attached, not user-entered", async () => {
     const w = mount(SphWishForm, { props: { modelValue: true, wish: null, toName: "Spoorthy" } });
     await typeInto(w, "textarea", "A little something for you");
-    await typeInto(w, 'input[type="datetime-local"]', "2026-08-01T09:00");
+    await pickDateTime(w, "2026-08-01T09:00");
     clickByText("Schedule ♥");
     await w.vm.$nextTick();
     expect(w.emitted("save")[0][0]).toEqual({
@@ -53,7 +59,7 @@ describe("SphWishForm", () => {
     expect(submit.disabled).toBe(true);
     await typeInto(w, "textarea", "hi");
     expect(submit.disabled).toBe(true); // still no date
-    await typeInto(w, 'input[type="datetime-local"]', "2026-08-01T09:00");
+    await pickDateTime(w, "2026-08-01T09:00");
     expect(submit.disabled).toBe(false);
   });
 });

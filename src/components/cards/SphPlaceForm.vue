@@ -46,7 +46,7 @@ const save = () => {
     <form class="grid gap-3.5" @submit.prevent="save()">
       <sph-glass-input v-model="form.name" label="Place" type="text" placeholder="Where to, love?" />
       <sph-glass-input v-model="form.note" label="Note (optional)" type="textarea" placeholder="Why this one?" />
-      <sph-glass-photo-input v-model="form.image" label="Photo (optional)" />
+      <sph-glass-photo-input v-model="form.image" label="Photo (optional)" folder="places" />
       <div class="flex justify-end gap-2 mt-1">
         <button type="button" class="gbtn gbtn-ghost" @click="$emit('update:modelValue', false)">Cancel</button>
         <button

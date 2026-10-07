@@ -1,11 +1,14 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
-import { SPH_PREFIX, sphCollection, useUsStore } from "../src/stores/us";
+import { LIST_NAMES } from "../src/stores/seed";
+import { SPL_PREFIX, splCollection, useUsStore } from "../src/stores/us";
+import { userByName } from "../src/users";
+import { loadSampleData, sampleCollections } from "./fixtures/sampleData";
 
-describe("sph collection naming", () => {
-  it("prefixes every collection with sph", () => {
-    expect(SPH_PREFIX).toBe("sph_");
+describe("spl collection naming", () => {
+  it("prefixes every collection with spl", () => {
+    expect(SPL_PREFIX).toBe("spl_");
     for (const list of [
       "milestones",
       "memories",
@@ -25,7 +28,52 @@ describe("sph collection naming", () => {
       "settings",
       "meta",
     ]) {
-      expect(sphCollection(list)).toBe("sph_" + list);
+      expect(splCollection(list)).toBe("spl_" + list);
+    }
+  });
+});
+
+describe("app ships with no demo content", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setActivePinia(createPinia());
+  });
+
+  it("starts every tab empty", () => {
+    const store = useUsStore();
+    for (const list of LIST_NAMES) expect(store[list]).toEqual([]);
+  });
+});
+
+describe("who did what", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setActivePinia(createPinia());
+  });
+
+  it("stamps the unlocked person's dob id on adds and edits", () => {
+    const store = useUsStore();
+    store.setActor(userByName("Hithesh"));
+    const it = store.addItem("milestones", { title: "first date" });
+    expect(it).toMatchObject({ addedBy: "Hithesh", addedById: "26071995", updatedById: "26071995" });
+    store.setActor(userByName("Spoorthy"));
+    store.updateItem("milestones", it.id, { title: "our first date" });
+    expect(store.milestones[0]).toMatchObject({ addedById: "26071995", updatedBy: "Spoorthy", updatedById: "17101999" });
+    store.setActor(null);
+  });
+});
+
+describe("firebase/sample-data.json", () => {
+  it("has example docs for every tab, each with a sample- id and a documented field list", () => {
+    for (const list of LIST_NAMES) {
+      const c = sampleCollections[splCollection(list)];
+      expect(c, list).toBeTruthy();
+      expect(c.docs.length, list).toBeGreaterThan(0);
+      for (const d of c.docs) {
+        expect(d.id.startsWith("sample-"), d.id).toBe(true);
+        // every field in a doc is described under _fields
+        for (const k of Object.keys(d)) expect(Object.keys(c._fields), `${list}.${k}`).toContain(k);
+      }
     }
   });
 });
@@ -34,26 +82,13 @@ describe("useUsStore (localStorage fallback)", () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    loadSampleData();
     setActivePinia(createPinia());
   });
 
-  it("seeds every tab with demo data", () => {
+  it("loads the sample data into every tab", () => {
     const store = useUsStore();
-    expect(store.milestones.length).toBeGreaterThan(0);
-    expect(store.memories.length).toBeGreaterThan(0);
-    expect(store.wishlist.length).toBeGreaterThan(0);
-    expect(store.visited.length).toBeGreaterThan(0);
-    expect(store.places.length).toBeGreaterThan(0);
-    expect(store.plans.length).toBeGreaterThan(0);
-    expect(store.wishes).toEqual([]); // no demo wishes — private per-couple content, not seeded
-    expect(store.goals.length).toBeGreaterThan(0);
-    expect(store.tasks.length).toBeGreaterThan(0);
-    expect(store.reminders.length).toBeGreaterThan(0);
-    expect(store.notes.length).toBeGreaterThan(0);
-    expect(store.gratitudeForMe.length).toBeGreaterThan(0);
-    expect(store.gratitudeForYou.length).toBeGreaterThan(0);
-    expect(store.gallery.length).toBeGreaterThan(0);
-    expect(store.messages.length).toBeGreaterThan(0);
+    for (const list of LIST_NAMES) expect(store[list].length, list).toBeGreaterThan(0);
   });
 
   it("addItem unshifts with a generated id and createdAt", () => {

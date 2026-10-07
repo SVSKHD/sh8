@@ -1,58 +1,53 @@
 <script setup>
 import { ref } from "vue";
-import { cloudinaryEnabled, uploadImage } from "../../cloudinary";
+import { deleteImage, MediaError, uploadImage } from "../../media";
 import SphPhotoPlaceholder from "./SphPhotoPlaceholder.vue";
 import SphIcon from "./SphIcon.vue";
 
-defineProps({
+const props = defineProps({
   modelValue: { type: String, default: null },
   label: { type: String, default: "Photo" },
+  /* Storage sub-folder, usually the tab/list name */
+  folder: { type: String, default: "misc" },
 });
 const emit = defineEmits(["update:modelValue"]);
 
 const uploading = ref(false);
+const error = ref("");
 
-/* local canvas-resize-to-base64 fallback — used when Cloudinary isn't
-   configured, or if an upload attempt fails */
-const resizeToDataUrl = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const MAX = 1000;
-        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-        const c = document.createElement("canvas");
-        c.width = Math.round(img.width * scale);
-        c.height = Math.round(img.height * scale);
-        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-        resolve(c.toDataURL("image/jpeg", 0.82));
-      };
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+/* photos uploaded while this input was open: if one is replaced or removed
+   before the form is saved it was never referenced anywhere, so delete it
+   right away. Photos that came in with the item are cleaned up by the store
+   when the item is actually saved or deleted. */
+const fresh = new Set();
+const discard = (url) => {
+  if (url && fresh.has(url)) {
+    fresh.delete(url);
+    deleteImage(url);
+  }
+};
 
 const onFile = async (ev) => {
   const file = ev.target.files && ev.target.files[0];
   ev.target.value = "";
   if (!file) return;
-  if (cloudinaryEnabled) {
-    uploading.value = true;
-    try {
-      emit("update:modelValue", await uploadImage(file));
-      return;
-    } catch (e) {
-      // fall through to the local fallback below
-    } finally {
-      uploading.value = false;
-    }
-  }
+  error.value = "";
+  uploading.value = true;
   try {
-    emit("update:modelValue", await resizeToDataUrl(file));
-  } catch (e) {}
+    const url = await uploadImage(file, props.folder);
+    discard(props.modelValue);
+    fresh.add(url);
+    emit("update:modelValue", url);
+  } catch (e) {
+    error.value = e instanceof MediaError ? e.message : "Upload failed — check your connection and try again.";
+  } finally {
+    uploading.value = false;
+  }
+};
+
+const remove = () => {
+  discard(props.modelValue);
+  emit("update:modelValue", null);
 };
 </script>
 
@@ -62,7 +57,7 @@ const onFile = async (ev) => {
     <div class="flex items-center gap-3">
       <label class="gbtn" :style="{ fontSize: '0.85rem', opacity: uploading ? 0.6 : 1, pointerEvents: uploading ? 'none' : '' }">
         <sph-icon name="Image" :size="16" />
-        {{ uploading ? "Uploading…" : modelValue ? "Change photo" : "Choose photo" }}
+        {{ uploading ? "Compressing & uploading…" : modelValue ? "Change photo" : "Choose photo" }}
         <input
           type="file"
           accept="image/*"
@@ -72,16 +67,12 @@ const onFile = async (ev) => {
           @change="onFile($event)"
         />
       </label>
-      <button
-        v-if="modelValue && !uploading"
-        type="button"
-        class="gbtn gbtn-ghost"
-        style="font-size: 0.8rem"
-        @click="$emit('update:modelValue', null)"
-      >
+      <button v-if="modelValue && !uploading" type="button" class="gbtn gbtn-ghost" style="font-size: 0.8rem" @click="remove()">
         Remove
       </button>
     </div>
+    <p v-if="error" class="m-0 mt-1.5 text-xs" style="color: var(--accent)" role="alert">{{ error }}</p>
+    <p v-else class="m-0 mt-1.5 text-xs" style="color: var(--ink-3)">Up to 5 MB — compressed automatically.</p>
     <img
       v-if="modelValue"
       :src="modelValue"

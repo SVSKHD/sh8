@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Firestore rules for Us. Every tab lives in its own "spl_"-prefixed
+// collection (see README → Firestore sync). There is no Firebase Auth: who
+// you are is decided by the PIN lock in the app, and every record is stamped
+// with that person's user id — their date of birth, ddmmyyyy (see
+// src/users.js → userId). These rules only allow the app's collections and
+// check that any stamp is one of our two ids; they can't verify identity,
+// so anyone who has this project's config can still read/write these
+// collections.
+// Deploy: `firebase deploy --only firestore:rules`, or paste into
+// Firebase console → Firestore → Rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isUsId(id) {
+      return id in [
+        '26071995', // Hithesh
+        '17101999'  // Spoorthy
+      ];
+    }
+
+    function isUsCollection(coll) {
+      return coll in [
+        'spl_milestones', 'spl_memories', 'spl_gallery', 'spl_wishlist',
+        'spl_visited', 'spl_places', 'spl_plans', 'spl_wishes', 'spl_goals',
+        'spl_tasks', 'spl_reminders', 'spl_notes', 'spl_gratitudeForMe',
+        'spl_gratitudeForYou', 'spl_messages', 'spl_settings'
+      ];
+    }
+
+    // stamps are optional (older records have none) but must be ours when set
+    function stampsOk(data) {
+      return (!('addedById' in data) || isUsId(data.addedById))
+        && (!('updatedById' in data) || isUsId(data.updatedById))
+        && (!('fromId' in data) || isUsId(data.fromId));
+    }
+
+    match /{coll}/{docId} {
+      allow read, delete: if isUsCollection(coll);
+      allow create, update: if isUsCollection(coll)
+        && request.resource.data.size() < 200
+        && stampsOk(request.resource.data);
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

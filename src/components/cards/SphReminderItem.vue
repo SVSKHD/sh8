@@ -4,6 +4,7 @@
    delete controls appear (common reminders are read-only). */
 import { computed } from "vue";
 import { daysUntil, getNextDueDate } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassCard from "../ui/SphGlassCard.vue";
 import SphIcon from "../ui/SphIcon.vue";
 
@@ -59,6 +60,7 @@ const countLabel = computed(() => {
           {{ fmtLocal(info.next) }}
         </p>
         <p v-if="item.note" class="note-body mt-1.5 clamp-2" style="font-size: 0.82rem">{{ item.note }}</p>
+        <sph-byline :item="item" class="mt-1.5" />
       </div>
       <div v-if="canManage" class="flex items-center gap-1 flex-shrink-0">
         <button

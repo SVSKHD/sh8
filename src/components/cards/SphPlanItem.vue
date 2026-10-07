@@ -4,6 +4,7 @@
    a segmented control (reuses the app's existing .seg class). */
 import { computed } from "vue";
 import { fmtDate } from "../../utils/dates";
+import SphByline from "../ui/SphByline.vue";
 import SphGlassCard from "../ui/SphGlassCard.vue";
 import SphIcon from "../ui/SphIcon.vue";
 import SphPhotoPlaceholder from "../ui/SphPhotoPlaceholder.vue";
@@ -40,7 +41,7 @@ const linkedChips = computed(() =>
         <p v-if="item.date" class="m-0 mt-0.5 text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">
           {{ fmtDate(item.date) }}
         </p>
-        <p v-if="item.addedBy" class="m-0 mt-0.5 text-xs" style="color: var(--ink-3)">added by {{ item.addedBy }}</p>
+        <sph-byline :item="item" class="mt-1" />
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
         <button class="gbtn gbtn-ghost gbtn-icon" aria-label="Edit plan" title="Edit" @click.stop="$emit('edit')">

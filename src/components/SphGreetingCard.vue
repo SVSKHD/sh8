@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { LOVE_QUOTES } from "../quotes";
+import SphBirthdayCountdown from "./SphBirthdayCountdown.vue";
 import SphGlassCard from "./ui/SphGlassCard.vue";
 import SphIcon from "./ui/SphIcon.vue";
 
@@ -123,26 +124,39 @@ onMounted(() => {
 
 <template>
   <sph-glass-card radius="1.5rem" pad="1.1rem 1.4rem" class="mb-5">
-    <div class="flex items-center justify-between gap-4 flex-wrap">
-      <div class="min-w-0">
-        <h2 class="font-display m-0 text-2xl font-semibold italic leading-tight">
-          {{ greeting }}, {{ user.name.toLowerCase() }} <span style="color: var(--accent)">❤</span>
-        </h2>
-        <p class="m-0 mt-1 text-xs" style="color: var(--ink-3)">
-          {{ dateStr }} ·
-          <span class="font-display italic" style="font-size: 0.95rem; color: var(--ink-2)">“{{ quote }}”</span>
-        </p>
-        <p class="greet-love-quote font-display italic">
-          “{{ loveQuote.text }}”<span v-if="loveQuote.author" class="greet-love-author">— {{ loveQuote.author }}</span>
-        </p>
-      </div>
-      <div v-if="wx" class="flex items-center gap-3" style="flex: 0 0 auto">
-        <span style="color: var(--accent)"><sph-icon :name="meta.icon" :size="30" :stroke-width="1.7" /></span>
-        <div>
-          <p class="greet-temp">{{ wx.temp }}°</p>
-          <p class="greet-cond">{{ meta.label }}{{ wx.city ? " in " + wx.city : "" }}</p>
+    <!-- two columns: greeting (+ weather) on the left, birthday deck on the right;
+         stacks into rows on narrow screens -->
+    <div class="greet-grid">
+      <div class="greet-main flex items-center justify-between gap-4 flex-wrap">
+        <div class="min-w-0">
+          <h2 class="font-display m-0 text-2xl font-semibold italic leading-tight">
+            {{ greeting }}, <span class="greet-name">{{ user.name.toLowerCase() }}</span>
+            <span style="color: var(--accent)">❤</span>
+          </h2>
+          <p class="m-0 mt-1 text-xs" style="color: var(--ink-3)">
+            {{ dateStr }} ·
+            <span class="font-display italic" style="font-size: 0.95rem; color: var(--ink-2)">“{{ quote }}”</span>
+          </p>
+          <p class="greet-love-quote font-display italic">
+            “{{ loveQuote.text }}”<span v-if="loveQuote.author" class="greet-love-author">— {{ loveQuote.author }}</span>
+          </p>
+        </div>
+        <div v-if="wx" class="flex items-center gap-3" style="flex: 0 0 auto">
+          <span style="color: var(--accent)"><sph-icon :name="meta.icon" :size="30" :stroke-width="1.7" /></span>
+          <div>
+            <p class="greet-temp">{{ wx.temp }}°</p>
+            <p class="greet-cond">{{ meta.label }}{{ wx.city ? " in " + wx.city : "" }}</p>
+          </div>
         </div>
       </div>
+      <!-- birthday deck: countdown to both our birthdays -->
+      <div class="greet-bday">
+        <sph-birthday-countdown :user="user" />
+      </div>
+    </div>
+    <!-- the app's tab bar, passed in by the page -->
+    <div v-if="$slots.tabs" class="greet-tabs">
+      <slot name="tabs" />
     </div>
   </sph-glass-card>
 </template>

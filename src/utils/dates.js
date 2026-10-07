@@ -42,3 +42,27 @@ export function daysUntil(date, from = new Date()) {
   if (!target || !today) return null;
   return Math.round((target - today) / DAY);
 }
+
+/* "Sep 12 – 18, 2026" / "Sep 28 – Oct 3, 2026" / "Dec 30, 2025 – Jan 2, 2026";
+   a single date (or to ≤ from) prints as one day */
+export function fmtDateRange(from, to) {
+  const a = toLocalMidnight(from);
+  const b = toLocalMidnight(to);
+  if (!a) return b ? fmtDate(to) : "";
+  if (!b || b <= a) return fmtDate(from);
+  const md = { month: "short", day: "numeric" };
+  const y = (d) => d.getFullYear();
+  if (y(a) !== y(b)) return fmtDate(from) + " – " + fmtDate(to);
+  const left = a.toLocaleDateString("en-US", md);
+  const right = a.getMonth() === b.getMonth() ? String(b.getDate()) : b.toLocaleDateString("en-US", md);
+  return left + " – " + right + ", " + y(b);
+}
+
+/* inclusive length of a trip in days (1 for a single day) */
+export function tripDays(from, to) {
+  const a = toLocalMidnight(from);
+  const b = toLocalMidnight(to);
+  if (!a) return 0;
+  if (!b || b < a) return 1;
+  return Math.round((b - a) / DAY) + 1;
+}

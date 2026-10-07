@@ -9,11 +9,23 @@ const tabs = [
 ];
 
 describe("SphGlassTabBar", () => {
-  it("renders a button per tab with its label tooltip", () => {
-    const w = mount(SphGlassTabBar, { props: { tabs, modelValue: "one" } });
+  it("renders a button per tab and shows its label tooltip on hover", async () => {
+    const w = mount(SphGlassTabBar, { props: { tabs, modelValue: "one" }, attachTo: document.body });
     const btns = w.findAll(".tab-btn");
     expect(btns).toHaveLength(3);
-    expect(btns[1].find(".tab-tip").text()).toBe("Dates");
+    expect(document.querySelector(".tab-tip")).toBeNull();
+    await btns[1].trigger("pointerenter", { pointerType: "mouse" });
+    expect(document.querySelector(".tab-tip").textContent.trim()).toBe("Dates");
+    await btns[1].trigger("pointerleave");
+    expect(document.querySelector(".tab-tip")).toBeNull();
+    w.unmount();
+  });
+
+  it("does not show the tooltip for touch taps", async () => {
+    const w = mount(SphGlassTabBar, { props: { tabs, modelValue: "one" }, attachTo: document.body });
+    await w.findAll(".tab-btn")[2].trigger("pointerenter", { pointerType: "touch" });
+    expect(document.querySelector(".tab-tip")).toBeNull();
+    w.unmount();
   });
 
   it("marks the active tab", () => {

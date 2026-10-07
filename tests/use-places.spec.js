@@ -2,10 +2,12 @@ import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { usePlaces } from "../src/composables/usePlaces";
 import { useUsStore } from "../src/stores/us";
+import { loadSampleData } from "./fixtures/sampleData";
 
 describe("usePlaces", () => {
   beforeEach(() => {
     localStorage.clear();
+    loadSampleData();
     sessionStorage.clear();
     setActivePinia(createPinia());
     vi.useFakeTimers();
